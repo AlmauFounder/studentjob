@@ -5,10 +5,11 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>StudentJob Almaty — подработка под расписание пар</title>
 <meta name="description" content="Проверенная подработка для студентов AlmaU, КБТУ, КИМЭП и КазНУ: смены под твои окна между парами, рядом с вузом, с честной оплатой. Прямо в Telegram.">
+<meta name="theme-color" content="#0d1322">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL@20..48,400..600,0..1&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@1,500;1,600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL@20..48,300..600,0..1&display=swap" rel="stylesheet">
 <script>
 /* ===================== НАСТРОЙКИ ===================== */
 const LANDING = {
@@ -20,167 +21,282 @@ const LANDING = {
 /* ==================================================== */
 </script>
 <style>
-:root{--blue:#2aabee;--blue-d:#1789c4;--blue-bg:#e8f6fd;--ink:#141b2b;--muted:#5b6474;--bg:#f5f7fb;--line:#e3e8f0;--green:#15803d;--green-bg:#ecfdf5;--amber:#b45309;--amber-bg:#fff7e6}
+:root{
+  --bg:#0d1322; --navy:#1f2a44; --navy-2:#162036;
+  --beige:#e8dcc8; --ink:#f1e9db; --muted:#a8a397; --soft:#7d7a73;
+  --gold:#c6a75e; --gold-hi:#dcc285; --gold-bg:rgba(198,167,94,.13); --gold-glow:rgba(198,167,94,.45);
+  --line:rgba(232,220,200,.11); --line-2:rgba(232,220,200,.18);
+  --glass:linear-gradient(180deg,rgba(232,220,200,.06),rgba(232,220,200,.015));
+  --serif:"Playfair Display",Georgia,"Times New Roman",serif;
+}
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
-body{font:16px/1.55 Inter,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;color:var(--ink);background:#fff}
+body{font:16px/1.6 Inter,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;color:var(--beige);background:var(--bg);overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:
+    radial-gradient(900px 520px at 50% -8%, rgba(198,167,94,.20), transparent 62%),
+    radial-gradient(700px 600px at -10% 35%, rgba(31,42,68,.95), transparent 70%),
+    radial-gradient(700px 600px at 110% 60%, rgba(31,42,68,.85), transparent 70%),
+    radial-gradient(500px 400px at 85% 95%, rgba(198,167,94,.08), transparent 70%),
+    var(--bg);}
 a{color:inherit;text-decoration:none}
-.ic{font-family:"Material Symbols Rounded";font-weight:normal;font-style:normal;font-size:24px;line-height:1;display:inline-block;white-space:nowrap;vertical-align:middle;font-variation-settings:"FILL" 1,"wght" 500;overflow:hidden;max-width:1.2em}
-.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
-header{position:sticky;top:0;z-index:5;background:rgba(255,255,255,.9);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
-header .wrap{display:flex;align-items:center;justify-content:space-between;height:64px}
-.logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:18px}
-.logo .ic{width:36px;height:36px;border-radius:10px;background:var(--blue);color:#fff;display:grid;place-items:center;font-size:22px;max-width:none}
-.btn{display:inline-flex;align-items:center;gap:8px;background:var(--blue);color:#fff;font-weight:600;border-radius:14px;padding:14px 22px;transition:background .15s}
-.btn:hover{background:var(--blue-d)}
-.btn.ghost{background:#fff;color:var(--ink);border:1.5px solid var(--line)}
-.btn.ghost:hover{border-color:var(--blue)}
-.btn.sm{padding:10px 16px;font-size:14px}
-.hero{background:linear-gradient(180deg,var(--blue-bg),#fff);padding:56px 0 48px}
-.hero .wrap{display:grid;grid-template-columns:1.15fr .85fr;gap:40px;align-items:center}
-.pill{display:inline-flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-size:14px;color:var(--muted);margin-bottom:18px}
-.pill b{color:var(--green)}
-h1{font-size:46px;line-height:1.08;letter-spacing:-.02em;font-weight:800;margin-bottom:16px}
-h1 span{color:var(--blue-d)}
-.sub{font-size:19px;color:var(--muted);margin-bottom:26px;max-width:560px}
-.cta{display:flex;gap:12px;flex-wrap:wrap}
-.unis{margin-top:22px;font-size:14px;color:var(--muted)}
-.phone{background:#fff;border:1px solid var(--line);border-radius:32px;padding:18px;box-shadow:0 30px 60px -30px rgba(20,27,43,.25);max-width:340px;margin-left:auto}
-.ph-top{font-weight:700;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
-.ph-top small{font-weight:500;color:var(--muted);font-size:12px}
-.slot{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-bottom:14px}
-.slot div{height:26px;border-radius:7px;background:var(--bg);font-size:10px;color:var(--muted);display:grid;place-items:center}
-.slot div.f{background:var(--green);color:#fff}
-.vc{border:1px solid var(--line);border-radius:16px;padding:12px;margin-bottom:8px}
-.vc .b{display:inline-block;font-size:11px;font-weight:600;color:var(--green);background:var(--green-bg);border-radius:6px;padding:2px 7px;margin-bottom:6px}
-.vc b{display:block}
-.vc small{color:var(--muted);font-size:12px}
-.vc .p{font-weight:700;margin-top:6px}
-.ex{font-size:11px;color:var(--muted);text-align:center;margin-top:4px}
-section{padding:64px 0}
-h2{font-size:32px;line-height:1.15;letter-spacing:-.01em;font-weight:800;margin-bottom:10px}
-.lead{color:var(--muted);font-size:17px;max-width:640px;margin-bottom:32px}
-.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-.box{border:1px solid var(--line);border-radius:20px;padding:22px;background:#fff}
-.box .ic{width:46px;height:46px;border-radius:13px;display:grid;place-items:center;background:var(--blue-bg);color:var(--blue-d);margin-bottom:14px;max-width:none}
-.box h3{font-size:18px;margin-bottom:6px}
+em.s{font-family:var(--serif);font-style:italic;font-weight:500;color:var(--gold-hi);letter-spacing:-.01em}
+.ic{font-family:"Material Symbols Rounded";font-weight:normal;font-style:normal;font-size:22px;line-height:1;display:inline-block;white-space:nowrap;vertical-align:middle;font-variation-settings:"FILL" 0,"wght" 400;overflow:hidden;max-width:1.2em}
+.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+
+/* --- навигация --- */
+.navbar{position:sticky;top:14px;z-index:20;margin:14px auto 0;max-width:1080px;padding:0 16px}
+.navbar .in{display:flex;align-items:center;justify-content:space-between;gap:14px;height:62px;padding:0 10px 0 20px;border:1px solid var(--line-2);border-radius:999px;background:rgba(13,19,34,.62);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 10px 40px -20px rgba(0,0,0,.6)}
+.logo{display:flex;align-items:center;gap:10px;font-weight:600;font-size:14px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink)}
+.logo .ic{color:var(--gold);font-size:24px;font-variation-settings:"FILL" 1,"wght" 500}
+.links{display:flex;gap:30px;font-size:14px;color:var(--muted)}
+.links a:hover{color:var(--ink)}
+.navbtns{display:flex;gap:8px}
+
+/* --- кнопки --- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-weight:600;font-size:15px;border-radius:999px;padding:13px 24px;transition:transform .15s,box-shadow .2s,background .2s}
+.btn .ic{font-size:20px}
+.btn.gold{background:linear-gradient(180deg,#e3cb93,var(--gold));color:#141c2f;box-shadow:0 0 0 1px rgba(255,240,210,.25) inset,0 10px 36px -8px var(--gold-glow)}
+.btn.gold:hover{transform:translateY(-1px);box-shadow:0 0 0 1px rgba(255,240,210,.35) inset,0 14px 44px -8px var(--gold-glow)}
+.btn.ghost{background:rgba(232,220,200,.05);color:var(--ink);border:1px solid var(--line-2)}
+.btn.ghost:hover{background:rgba(232,220,200,.09)}
+.btn.sm{padding:10px 18px;font-size:14px}
+.btn.lg{padding:16px 32px;font-size:16px}
+
+/* --- hero --- */
+.hero{text-align:center;padding:84px 0 40px}
+.badge{display:inline-flex;align-items:center;gap:10px;padding:6px 14px 6px 8px;border:1px solid var(--line-2);border-radius:999px;background:rgba(232,220,200,.04);font-size:13px;color:var(--muted)}
+.badge b{display:inline-flex;align-items:center;gap:6px;background:var(--gold-bg);color:var(--gold-hi);font-weight:600;border-radius:999px;padding:3px 10px}
+.badge b::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--gold);box-shadow:0 0 10px var(--gold)}
+h1{font-size:clamp(40px,6.6vw,78px);line-height:1.04;letter-spacing:-.035em;font-weight:600;color:var(--ink);margin:26px auto 22px;max-width:900px}
+.sub{font-size:clamp(16px,2vw,19px);color:var(--muted);max-width:600px;margin:0 auto 34px}
+.checks{display:flex;justify-content:center;flex-wrap:wrap;gap:10px 26px;margin-top:22px;font-size:13px;color:var(--muted)}
+.checks span{display:inline-flex;align-items:center;gap:6px}
+.checks .ic{font-size:17px;color:var(--gold)}
+
+/* --- стеклянные карточки --- */
+.glass{background:var(--glass);border:1px solid var(--line);border-radius:24px;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:0 1px 0 rgba(232,220,200,.06) inset,0 30px 60px -40px rgba(0,0,0,.7)}
+.feat{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:64px}
+.feat .glass{padding:22px 22px 0;display:flex;flex-direction:column;min-height:390px;overflow:hidden}
+.fh{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.fi{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;border:1px solid rgba(198,167,94,.35);background:var(--gold-bg);color:var(--gold-hi);max-width:none;font-size:21px}
+.fh h3{font-size:17px;font-weight:600;color:var(--ink)}
+.feat p{color:var(--muted);font-size:14px;line-height:1.6;text-align:left}
+.viz{flex:1;display:flex;align-items:center;justify-content:center;position:relative;min-height:200px}
+
+/* визуал 1: источники → StudentJob */
+.v1{width:100%;display:flex;align-items:center;justify-content:space-between;padding:0 8px}
+.srcs{display:flex;flex-direction:column;gap:12px}
+.src{width:40px;height:40px;border-radius:11px;display:grid;place-items:center;background:rgba(232,220,200,.06);border:1px solid var(--line-2);color:var(--muted);font-size:19px;max-width:none}
+.v1 svg{flex:1;height:190px}
+.hub{width:74px;height:74px;border-radius:20px;display:grid;place-items:center;background:linear-gradient(180deg,rgba(220,194,133,.28),rgba(198,167,94,.12));border:1px solid rgba(220,194,133,.6);color:var(--gold-hi);font-size:34px;max-width:none;box-shadow:0 0 40px -4px var(--gold-glow),0 0 0 6px rgba(198,167,94,.06)}
+
+/* визуал 2: сетка окон */
+.v2{width:100%;padding:0 4px}
+.wk{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+.wk div{height:24px;border-radius:7px;background:rgba(232,220,200,.05);border:1px solid var(--line)}
+.wk div.f{background:linear-gradient(180deg,rgba(220,194,133,.55),rgba(198,167,94,.3));border-color:rgba(220,194,133,.55);box-shadow:0 0 16px -4px var(--gold-glow)}
+.wkd{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;font-size:11px;color:var(--soft);text-align:center;margin-bottom:6px}
+.pill{position:absolute;top:14px;right:10px;font-size:12px;font-weight:600;color:var(--gold-hi);background:rgba(13,19,34,.8);border:1px solid rgba(198,167,94,.4);border-radius:999px;padding:4px 10px}
+
+/* визуал 3: радар */
+.v3{position:relative;width:220px;height:220px}
+.v3 i{position:absolute;inset:0;margin:auto;border-radius:50%;border:1px solid rgba(220,194,133,.28)}
+.v3 i:nth-child(1){width:220px;height:220px}
+.v3 i:nth-child(2){width:160px;height:160px;border-color:rgba(220,194,133,.35)}
+.v3 i:nth-child(3){width:100px;height:100px;border-color:rgba(220,194,133,.45)}
+.v3 .core{position:absolute;inset:0;margin:auto;width:54px;height:54px;border-radius:50%;display:grid;place-items:center;background:rgba(198,167,94,.18);border:1px solid rgba(220,194,133,.7);color:var(--gold-hi);font-size:26px;max-width:none;box-shadow:0 0 36px var(--gold-glow);font-variation-settings:"FILL" 1}
+.v3 b{position:absolute;width:9px;height:9px;border-radius:50%;background:var(--gold-hi);box-shadow:0 0 12px 2px var(--gold-glow)}
+
+/* --- секции --- */
+section{padding:84px 0}
+.eyebrow{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);font-weight:600;margin-bottom:14px}
+h2{font-size:clamp(30px,4vw,46px);line-height:1.1;letter-spacing:-.025em;font-weight:600;color:var(--ink);margin-bottom:14px}
+.lead{color:var(--muted);font-size:17px;max-width:620px;margin-bottom:40px}
+.center{text-align:center}.center .lead{margin-left:auto;margin-right:auto}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.box{padding:26px}
+.box .fi{margin-bottom:18px}
+.box h3{font-size:18px;font-weight:600;color:var(--ink);margin-bottom:8px}
 .box p{color:var(--muted);font-size:15px}
-.pain{background:var(--bg)}
-.pain .box .ic{background:var(--amber-bg);color:var(--amber)}
-.steps{counter-reset:s}
-.steps .box h3::before{counter-increment:s;content:counter(s)". ";color:var(--blue-d)}
-.biz{background:var(--ink);color:#fff}
-.biz .lead{color:#b9c1d0}
-.biz .box{background:#1d2638;border-color:#2c3850;color:#fff}
-.biz .box p{color:#b9c1d0}
-.biz .box .ic{background:#24344f;color:#7fd0f7}
-.price{font-size:28px;font-weight:800;margin:6px 0}
-.launch{display:flex;gap:16px;align-items:flex-start;background:var(--green-bg);color:#0f5c2c;border-radius:20px;padding:22px}
-.launch .ic{font-size:30px;max-width:none}
-details{border:1px solid var(--line);border-radius:16px;padding:16px 18px;margin-bottom:10px}
-summary{font-weight:600;cursor:pointer;list-style:none;display:flex;justify-content:space-between}
-summary::after{content:"+";color:var(--blue-d);font-size:20px;line-height:1}
+.num{font-family:var(--serif);font-style:italic;font-size:40px;line-height:1;color:var(--gold);margin-bottom:16px}
+
+/* бизнес */
+.bizwrap{padding:44px;display:grid;grid-template-columns:1fr 1.15fr;gap:40px;align-items:center}
+.tariffs{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.tar{padding:22px;border-radius:20px;border:1px solid var(--line-2);background:rgba(232,220,200,.03)}
+.tar.hot{border-color:rgba(220,194,133,.6);background:linear-gradient(180deg,rgba(198,167,94,.14),rgba(198,167,94,.03));box-shadow:0 0 50px -20px var(--gold-glow)}
+.tar small{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.tar .p{font-size:34px;font-weight:600;color:var(--ink);letter-spacing:-.02em;margin:6px 0 8px}
+.tar.hot .p{color:var(--gold-hi)}
+.tar p{font-size:14px;color:var(--muted)}
+
+/* запуск */
+.launch{display:flex;gap:18px;align-items:flex-start;padding:26px 28px}
+.launch .fi{flex:none}
+.launch b{color:var(--ink)}
+.launch p{color:var(--muted)}
+
+/* FAQ */
+details{border:1px solid var(--line);border-radius:18px;padding:18px 22px;margin-bottom:10px;background:rgba(232,220,200,.025)}
+summary{font-weight:600;color:var(--ink);cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:12px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";color:var(--gold);font-size:22px;line-height:1}
 details[open] summary::after{content:"–"}
 details p{color:var(--muted);margin-top:10px}
-.final{text-align:center;background:linear-gradient(180deg,#fff,var(--blue-bg))}
-.final .cta{justify-content:center}
-footer{border-top:1px solid var(--line);padding:24px 0;color:var(--muted);font-size:14px}
+
+/* финал + вузы */
+.final{padding:96px 0 70px}
+.unis{border-top:1px solid var(--line);margin-top:70px;padding-top:30px}
+.unis small{display:block;font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--soft);margin-bottom:20px}
+.unis .row{display:flex;justify-content:center;flex-wrap:wrap;gap:16px 56px;font-size:20px;font-weight:600;letter-spacing:.06em;color:rgba(232,220,200,.55)}
+footer{border-top:1px solid var(--line);padding:26px 0;color:var(--soft);font-size:13px}
 footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
-@media(max-width:820px){
-  .hero .wrap{grid-template-columns:1fr}
-  .phone{margin:10px auto 0}
-  h1{font-size:34px}
-  .sub{font-size:17px}
-  .grid3{grid-template-columns:1fr}
-  section{padding:48px 0}
-  h2{font-size:26px}
-  header .btn span.t{display:none}
+
+@media(max-width:900px){
+  .links{display:none}
+  .feat,.grid3{grid-template-columns:1fr}
+  .feat .glass{min-height:340px}
+  .bizwrap{grid-template-columns:1fr;padding:28px}
+  section{padding:60px 0}
+  .hero{padding:56px 0 20px}
+}
+@media(max-width:520px){
+  .navbtns .ghost{display:none}
+  .tariffs{grid-template-columns:1fr}
+  .navbar .in{padding-left:16px}
+  .logo{font-size:13px;letter-spacing:.14em}
 }
 </style>
 </head>
 <body>
-<header><div class="wrap">
-  <a class="logo" href="#"><span class="ic">school</span>StudentJob</a>
-  <a class="btn sm tg" data-src="landing_header" href="#"><span class="ic">send</span><span class="t">Открыть в Telegram</span></a>
-</div></header>
 
-<div class="hero"><div class="wrap">
-  <div>
-    <div class="pill"><span class="ic" style="font-size:18px;color:var(--green)">rocket_launch</span><span><b>Запускаемся</b> в Алматы — ноябрь 2026</span></div>
-    <h1>Подработка <span>под твоё расписание пар</span></h1>
-    <p class="sub">Проверенные вакансии рядом с вузом или домом, с честной оплатой. Отметь окна между парами — покажем только смены, которые в них помещаются.</p>
-    <div class="cta">
-      <a class="btn tg" data-src="landing" href="#"><span class="ic">send</span>Найти подработку в Telegram</a>
-      <a class="btn ghost" href="#biz">Я работодатель</a>
-    </div>
-    <p class="unis">Для студентов AlmaU · КБТУ · КИМЭП · КазНУ · бесплатно</p>
-  </div>
-  <div class="phone" aria-hidden="true">
-    <div class="ph-top">Твои окна <small>Пн–Пт</small></div>
-    <div class="slot"><div>пары</div><div>пары</div><div>пары</div><div>пары</div><div>пары</div><div class="f">16–20</div><div>пары</div><div class="f">16–20</div><div>пары</div><div class="f">16–20</div><div class="f">20–23</div><div class="f">20–23</div><div class="f">20–23</div><div class="f">20–23</div><div class="f">20–23</div></div>
-    <div class="vc"><span class="b">Подходит под окна</span><b>Бариста</b><small>Пн–Пт · 18:00–22:00 · рядом с вузом</small><div class="p">2 000 ₸ / час</div></div>
-    <div class="vc"><span class="b">Подходит под окна</span><b>Сотрудник ПВЗ</b><small>Сб–Вс · 10:00–18:00 · без опыта</small><div class="p">1 800 ₸ / час</div></div>
-    <p class="ex">Пример интерфейса</p>
+<div class="navbar"><div class="in">
+  <a class="logo" href="#"><span class="ic">school</span>StudentJob</a>
+  <nav class="links"><a href="#how">Как работает</a><a href="#check">Проверка</a><a href="#biz">Для бизнеса</a><a href="#faq">Вопросы</a></nav>
+  <div class="navbtns">
+    <a class="btn ghost sm" href="#biz">Для бизнеса</a>
+    <a class="btn gold sm tg" data-src="landing_header" href="#">Открыть <span class="ic">arrow_forward</span></a>
   </div>
 </div></div>
 
-<section class="pain"><div class="wrap">
-  <h2>Знакомо?</h2>
-  <p class="lead">Искать подработку студенту сейчас — это полдня ручного отсева.</p>
+<header class="hero"><div class="wrap">
+  <span class="badge"><b>Скоро</b>Запуск в Алматы — ноябрь 2026 <span class="ic" style="font-size:16px">chevron_right</span></span>
+  <h1>Подработка, которая <em class="s">подстраивается</em> под твои пары.</h1>
+  <p class="sub">Проверенные вакансии рядом с вузом или домом, с честной оплатой. Отметь окна между парами — покажем только смены, которые в них помещаются.</p>
+  <a class="btn gold lg tg" data-src="landing" href="#">Найти подработку в Telegram <span class="ic">arrow_forward</span></a>
+  <div class="checks">
+    <span><span class="ic">check_circle</span>Бесплатно для студентов</span>
+    <span><span class="ic">check_circle</span>Работодатели проверены вручную</span>
+    <span><span class="ic">check_circle</span>Без резюме и регистрации</span>
+  </div>
+
+  <div class="feat">
+    <div class="glass">
+      <div class="fh"><span class="ic fi">hub</span><h3>Всё в одном месте</h3></div>
+      <p>Вместо hh.kz, десятка Telegram-каналов и Instagram — одна лента вакансий только для студентов.</p>
+      <div class="viz"><div class="v1">
+        <div class="srcs"><span class="ic src">work</span><span class="ic src">forum</span><span class="ic src">photo_camera</span><span class="ic src">group</span></div>
+        <svg viewBox="0 0 120 190" preserveAspectRatio="none" aria-hidden="true">
+          <g fill="none" stroke="#c6a75e" stroke-opacity=".55" stroke-width="1.2" stroke-dasharray="2 4">
+            <path d="M0 23 C 60 23, 60 95, 120 95"/><path d="M0 75 C 60 75, 60 95, 120 95"/>
+            <path d="M0 127 C 60 127, 60 95, 120 95"/><path d="M0 179 C 60 179, 60 95, 120 95"/>
+          </g>
+        </svg>
+        <span class="ic hub">school</span>
+      </div></div>
+    </div>
+    <div class="glass">
+      <div class="fh"><span class="ic fi">calendar_month</span><h3>Под твоё расписание</h3></div>
+      <p>Отмечаешь свободные окна — видишь только смены, которые не пересекаются с парами.</p>
+      <div class="viz"><div class="v2">
+        <span class="pill">↑ 4 смены подходят</span>
+        <div class="wkd"><span>Пн</span><span>Вт</span><span>Ср</span><span>Чт</span><span>Пт</span><span>Сб</span></div>
+        <div class="wk">
+          <div></div><div></div><div></div><div></div><div></div><div class="f"></div>
+          <div></div><div></div><div></div><div></div><div></div><div class="f"></div>
+          <div class="f"></div><div></div><div class="f"></div><div></div><div class="f"></div><div class="f"></div>
+          <div class="f"></div><div class="f"></div><div class="f"></div><div class="f"></div><div class="f"></div><div></div>
+        </div>
+      </div></div>
+    </div>
+    <div class="glass">
+      <div class="fh"><span class="ic fi">verified_user</span><h3>Проверено вручную</h3></div>
+      <p>Каждого работодателя проверяем до публикации: компания, адрес, честные условия.</p>
+      <div class="viz"><div class="v3">
+        <i></i><i></i><i></i><span class="ic core">shield</span>
+        <b style="left:20px;top:44px"></b><b style="right:22px;top:40px"></b><b style="left:26px;bottom:38px"></b><b style="right:18px;bottom:46px"></b>
+      </div></div>
+    </div>
+  </div>
+</div></header>
+
+<section><div class="wrap">
+  <p class="eyebrow">Проблема</p>
+  <h2>Искать подработку — это <em class="s">полдня</em> ручного отсева</h2>
+  <p class="lead">Знакомо, если хоть раз искал работу после пар.</p>
   <div class="grid3">
-    <div class="box"><span class="ic">travel_explore</span><h3>Вакансии везде</h3><p>hh.kz, Telegram-каналы, Instagram, знакомые. И большинство — на полный день.</p></div>
-    <div class="box"><span class="ic">calendar_month</span><h3>Ручная сверка с парами</h3><p>Сохраняешь посты в «Избранное» и сам проверяешь график, район и оплату.</p></div>
-    <div class="box"><span class="ic">report</span><h3>Описание ≠ реальность</h3><p>Другая оплата, другие обязанности, «серые» схемы и работодатели, которые не отвечают.</p></div>
+    <div class="glass box"><span class="ic fi">travel_explore</span><h3>Вакансии везде</h3><p>hh.kz, Telegram-каналы, Instagram, знакомые. И большинство — на полный день.</p></div>
+    <div class="glass box"><span class="ic fi">bookmark</span><h3>Ручная сверка с парами</h3><p>Сохраняешь посты в «Избранное» и сам проверяешь график, район и оплату.</p></div>
+    <div class="glass box"><span class="ic fi">report</span><h3>Описание ≠ реальность</h3><p>Другая оплата, другие обязанности, «серые» схемы и работодатели, которые не отвечают.</p></div>
   </div>
 </div></section>
 
-<section><div class="wrap">
-  <h2>Как работает StudentJob</h2>
-  <p class="lead">Всё внутри Telegram — без резюме и регистрации на сайтах.</p>
-  <div class="grid3 steps">
-    <div class="box"><span class="ic">edit_calendar</span><h3>Отметь свободные окна</h3><p>Вуз, район, свободные часы между парами и желаемая ставка — за 2 минуты.</p></div>
-    <div class="box"><span class="ic">bolt</span><h3>Смотри подходящие смены</h3><p>Видишь только вакансии, которые помещаются в твои окна, и сразу понятно, где есть пересечение с парами.</p></div>
-    <div class="box"><span class="ic">send</span><h3>Откликайся в один тап</h3><p>Анкету увидит только тот работодатель, которому ты откликнулся. Статус отклика — в приложении.</p></div>
+<section id="how"><div class="wrap center">
+  <p class="eyebrow">Как это работает</p>
+  <h2>Три шага — и всё <em class="s">внутри Telegram</em></h2>
+  <p class="lead">Без резюме, регистрации на сайтах и звонков в никуда.</p>
+  <div class="grid3" style="text-align:left">
+    <div class="glass box"><div class="num">01</div><h3>Отметь свободные окна</h3><p>Вуз, район, свободные часы между парами и желаемая ставка — за 2 минуты.</p></div>
+    <div class="glass box"><div class="num">02</div><h3>Смотри подходящие смены</h3><p>Только вакансии, которые помещаются в твои окна. Сразу видно, где есть пересечение с парами.</p></div>
+    <div class="glass box"><div class="num">03</div><h3>Откликайся в один тап</h3><p>Анкету увидит только тот работодатель, которому ты откликнулся. Статус — в приложении.</p></div>
+  </div>
+</div></section>
+
+<section id="check" style="padding-top:20px"><div class="wrap">
+  <p class="eyebrow">Безопасность</p>
+  <h2>Что мы <em class="s">проверяем</em></h2>
+  <p class="lead">Каждую вакансию команда StudentJob проверяет вручную, до публикации.</p>
+  <div class="grid3">
+    <div class="glass box"><span class="ic fi">domain_verification</span><h3>Компания реальная</h3><p>БИН/ИИН, адрес точки, живой контакт. Созваниваемся или приходим лично.</p></div>
+    <div class="glass box"><span class="ic fi">payments</span><h3>Условия честные</h3><p>Точный график, обязанности и ставка в ₸ за час. Без «оплата по договорённости».</p></div>
+    <div class="glass box"><span class="ic fi">shield</span><h3>Никаких платежей со студента</h3><p>Если работодатель просит деньги за обучение, форму или оформление — снимаем вакансию.</p></div>
+  </div>
+</div></section>
+
+<section id="biz"><div class="wrap">
+  <div class="glass bizwrap">
+    <div>
+      <p class="eyebrow">Для бизнеса</p>
+      <h2>Студенты на <em class="s">вечерние смены</em> и выходные</h2>
+      <p class="lead" style="margin-bottom:26px">Для кофеен, магазинов, ПВЗ и учебных центров. Кандидаты свободны именно в ваши часы и живут или учатся рядом — без сотни нерелевантных откликов.</p>
+      <a class="btn gold tg" data-src="employer_landing" href="#"><span class="ic">storefront</span>Разместить вакансию</a>
+    </div>
+    <div class="tariffs">
+      <div class="tar"><small>Пилот</small><div class="p">0 ₸</div><p>Первая вакансия бесплатно — проверить сервис в деле.</p></div>
+      <div class="tar hot"><small>Стандарт</small><div class="p">5 000 ₸</div><p>За размещение. Меньше 3 подходящих кандидатов за 7 дней — вернём деньги. Оплата через Kaspi после проверки.</p></div>
+    </div>
   </div>
 </div></section>
 
 <section style="padding-top:0"><div class="wrap">
-  <h2>Что мы проверяем</h2>
-  <p class="lead">Каждую вакансию команда StudentJob проверяет вручную, до публикации.</p>
-  <div class="grid3">
-    <div class="box"><span class="ic">verified</span><h3>Компания реальная</h3><p>БИН/ИИН, адрес точки, живой контакт. Мы созваниваемся или приходим лично.</p></div>
-    <div class="box"><span class="ic">payments</span><h3>Условия честные</h3><p>Точный график, обязанности и ставка в ₸ за час. Без «оплата по договорённости».</p></div>
-    <div class="box"><span class="ic">shield</span><h3>Никаких платежей со студента</h3><p>Если работодатель просит деньги за обучение, форму или оформление — снимаем вакансию.</p></div>
-  </div>
+  <div class="glass launch"><span class="ic fi">campaign</span><p><b>Мы честно на старте.</b> StudentJob — студенческий проект команды AlmaFounders (AlmaU). Сейчас мы вручную собираем и проверяем первые вакансии рядом с AlmaU, КБТУ, КИМЭП и КазНУ. Если подходящей смены пока нет — заполни анкету, и мы напишем, когда она появится.</p></div>
 </div></section>
 
-<section class="biz" id="biz"><div class="wrap">
-  <h2>Для кофеен, магазинов, ПВЗ и учебных центров</h2>
-  <p class="lead">Студенты на вечерние смены и выходные, которые свободны именно в ваши часы и живут или учатся рядом. Без сотни нерелевантных откликов.</p>
-  <div class="grid3">
-    <div class="box"><span class="ic">rocket_launch</span><h3>Пилот</h3><div class="price">0 ₸</div><p>Первая вакансия бесплатно — чтобы проверить сервис в деле.</p></div>
-    <div class="box"><span class="ic">workspace_premium</span><h3>Стандарт</h3><div class="price">5 000 ₸</div><p>За размещение. Гарантия: если за 7 дней меньше 3 подходящих кандидатов — вернём деньги. Оплата через Kaspi после проверки.</p></div>
-    <div class="box"><span class="ic">support_agent</span><h3>Лично с каждым</h3><p>Мы только запускаемся, поэтому сами приезжаем, помогаем составить вакансию и присылаем кандидатов.</p></div>
-  </div>
-  <div class="cta" style="margin-top:28px"><a class="btn tg" data-src="employer_landing" href="#"><span class="ic">storefront</span>Разместить вакансию</a></div>
-</div></section>
-
-<section><div class="wrap">
-  <div class="launch"><span class="ic">campaign</span><div><b>Мы честно на старте.</b> StudentJob — студенческий проект команды AlmaFounders (AlmaU). Сейчас мы вручную собираем и проверяем первые вакансии рядом с AlmaU, КБТУ, КИМЭП и КазНУ. Если подходящей смены пока нет — заполни анкету, и мы напишем, когда она появится.</div></div>
-</div></section>
-
-<section style="padding-top:0"><div class="wrap" style="max-width:760px">
-  <h2>Вопросы</h2>
+<section id="faq" style="padding-top:0"><div class="wrap" style="max-width:780px">
+  <p class="eyebrow center">Вопросы</p>
+  <h2 class="center" style="margin-bottom:30px">Коротко о <em class="s">главном</em></h2>
   <details><summary>Это бесплатно для студентов?</summary><p>Да. Платит только работодатель за размещение вакансии.</p></details>
   <details><summary>Кто увидит мои контакты?</summary><p>Только работодатель, на вакансию которого ты откликнулся. Анкету и отклики можно удалить в профиле.</p></details>
   <details><summary>Мне 17, можно?</summary><p>Пока мы работаем только со студентами от 18 лет.</p></details>
-  <details><summary>Что делать, если условия на месте не совпали?</summary><p>Напиши команде в приложении. Мы разберёмся с работодателем и при повторе снимем его вакансии.</p></details>
+  <details><summary>Что делать, если условия на месте не совпали?</summary><p>Напиши команде в приложении. Разберёмся с работодателем, а при повторе снимем его вакансии.</p></details>
 </div></section>
 
-<section class="final"><div class="wrap">
-  <h2>Найди смену, которая не мешает учёбе</h2>
-  <p class="lead" style="margin:0 auto 26px">2 минуты на анкету — дальше подборка под твои окна.</p>
-  <div class="cta"><a class="btn tg" data-src="landing_bottom" href="#"><span class="ic">send</span>Открыть в Telegram</a></div>
+<section class="final"><div class="wrap center">
+  <h2>Найди смену, которая <em class="s">не мешает</em> учёбе</h2>
+  <p class="lead">2 минуты на анкету — дальше подборка под твои окна.</p>
+  <a class="btn gold lg tg" data-src="landing_bottom" href="#">Открыть в Telegram <span class="ic">arrow_forward</span></a>
+  <div class="unis"><small>Для студентов вузов Алматы</small><div class="row"><span>ALMAU</span><span>КБТУ</span><span>КИМЭП</span><span>КАЗНУ</span></div></div>
 </div></section>
 
 <footer><div class="wrap"><span>© 2026 StudentJob Almaty · команда AlmaFounders, AlmaU</span><span>Студенческий проект · Алматы</span></div></footer>
