@@ -3,179 +3,260 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#0d1322">
+<meta name="theme-color" content="#121A2E">
 <title>StudentJob Almaty</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@1,500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600&family=Unbounded:wght@500;600;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL@20..48,400..600,0..1&display=swap" rel="stylesheet">
 <script>
 /* ===================== НАСТРОЙКИ (меняйте только здесь) ===================== */
 const CONFIG = {
-  // Ссылка на веб-приложение Google Apps Script (заканчивается на /exec).
-  // Пока пусто — аппка работает в ДЕМО-режиме: показывает примеры, ничего не сохраняет.
+  // Ссылка на веб-приложение Google Apps Script (заканчивается на /exec)
   API_URL: "",
+  // Ссылка на мини-аппку в Telegram (из @BotFather), для тех, кто открыл в браузере
+  BOT_LINK: "https://t.me/YOUR_BOT/app",
   // Telegram-аккаунт команды для вопросов (без @)
   SUPPORT_TG: "studentjob_support",
-  // Цена размещения для работодателя, ₸
-  PRICE: 5000
+  // Тариф «Стандарт»: цена в ₸ и гарантия (минимум кандидатов за 7 дней)
+  PRICE: 2000,
+  GUARANTEE: 5,
+  // Куда платить по Kaspi, например: "Kaspi перевод по номеру +7 7XX XXX XX XX (Имя Ф.)"
+  KASPI: ""
 };
 /* =========================================================================== */
 </script>
 <style>
+/* ---------- Тема: тёмная по умолчанию ---------- */
 :root{
-  --blue:#c6a75e;--blue-d:#dcc285;--blue-bg:rgba(198,167,94,.14);
-  --ink:#f1e9db;--muted:#a8a397;--soft:#7d7a73;
-  --bg:#0d1322;--navy:#1f2a44;--card:linear-gradient(180deg,rgba(232,220,200,.06),rgba(232,220,200,.02));
-  --field:rgba(232,220,200,.045);--line:rgba(232,220,200,.12);--line-2:rgba(232,220,200,.2);
-  --green:#c6a75e;--green-bg:rgba(198,167,94,.14);--amber:#e3a77c;--amber-bg:rgba(227,167,124,.13);--red:#e88080;--red-bg:rgba(232,128,128,.12);
-  --glow:rgba(198,167,94,.45);--on-gold:#141c2f;
-  --serif:"Playfair Display",Georgia,serif;
+  --bg:#121A2E; --bg-glass:rgba(18,26,46,.86);
+  --panel:#1A2440; --panel-2:#222D4C; --field:#1E2846; --pair:#2E3A5E;
+  --line:#2C385A; --line-2:#3A4670;
+  --ink:#EEF1F6; --head:#FFFFFF; --muted:#A9B2C6; --soft:#8E98AE;
+  --blue:#FFD54A; --blue-hi:#FFE07A; --blue-d:#FFE08A; --blue-bg:rgba(255,213,74,.13); --blue-line:rgba(255,213,74,.38);
+  --on-gold:#121A2E;
+  --amber:#F4B27A; --amber-bg:rgba(244,178,122,.13); --amber-line:rgba(244,178,122,.32);
+  --red:#F08A8A; --red-bg:rgba(240,138,138,.12); --red-line:rgba(240,138,138,.32);
+  --shadow:0 20px 40px -28px rgba(0,0,0,.7);
+  --display:Unbounded,"Segoe UI",sans-serif;
   --r:18px;
+  color-scheme:dark;
+}
+/* ---------- Светлая тема: включается, если Telegram светлый ---------- */
+html.light{
+  --bg:#F4F6F9; --bg-glass:rgba(244,246,249,.9);
+  --panel:#FFFFFF; --panel-2:#EEF1F6; --field:#FFFFFF; --pair:#DDE2EA;
+  --line:#E1E6EE; --line-2:#CDD4E0;
+  --ink:#15213B; --head:#15213B; --muted:#586279; --soft:#6A7387;
+  --blue:#FFD54A; --blue-hi:#FFCB1F; --blue-d:#7A5A00; --blue-bg:rgba(255,213,74,.26); --blue-line:rgba(214,166,0,.45);
+  --on-gold:#15213B;
+  --amber:#A3550B; --amber-bg:rgba(244,150,60,.14); --amber-line:rgba(200,110,20,.3);
+  --red:#B42318; --red-bg:rgba(220,60,50,.09); --red-line:rgba(180,35,24,.28);
+  --shadow:0 16px 32px -26px rgba(21,33,59,.35);
+  color-scheme:light;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{background:var(--bg);color:var(--ink);font:15px/1.45 Inter,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;-webkit-tap-highlight-color:transparent;color-scheme:dark}
+html,body{background:var(--bg);color:var(--ink);font:15px/1.5 Onest,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;-webkit-tap-highlight-color:transparent}
 body{min-height:100vh;overscroll-behavior-y:none}
-body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:
-  radial-gradient(520px 340px at 85% -8%,rgba(198,167,94,.18),transparent 65%),
-  radial-gradient(480px 420px at -15% 40%,rgba(31,42,68,.95),transparent 70%),
-  radial-gradient(420px 360px at 110% 85%,rgba(31,42,68,.8),transparent 70%),var(--bg)}
 button,input,select,textarea{font:inherit;color:inherit}
 button{cursor:pointer;border:0;background:none}
-select option{background:#1f2a44;color:var(--ink)}
+select option{background:var(--panel);color:var(--ink)}
+button:focus-visible,a:focus-visible,.input:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
 .ic{font-family:"Material Symbols Rounded";font-weight:normal;font-style:normal;font-size:22px;line-height:1;letter-spacing:normal;text-transform:none;display:inline-block;white-space:nowrap;direction:ltr;-webkit-font-smoothing:antialiased;font-variation-settings:"FILL" 0,"wght" 400;vertical-align:middle;overflow:hidden;max-width:1.2em}
 .ic.f{font-variation-settings:"FILL" 1,"wght" 500}
-em.s{font-family:var(--serif);font-style:italic;font-weight:500;color:var(--blue-d)}
+em.s{font:inherit;color:inherit}
 .app{max-width:520px;margin:0 auto;min-height:100vh;position:relative}
 .screen{display:none;min-height:100vh;padding-bottom:110px}
-.screen.on{display:block;animation:in .22s ease-out}
-@keyframes in{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:none}}
+.screen.on{display:block;animation:in .2s ease-out}
+@keyframes in{from{opacity:0;transform:translateX(10px)}to{opacity:1;transform:none}}
 .pad{padding:16px}
-.top{position:sticky;top:0;z-index:5;background:rgba(13,19,34,.78);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);display:flex;align-items:center;gap:8px;padding:12px 12px 10px}
+.top{position:sticky;top:0;z-index:5;background:var(--bg-glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);display:flex;align-items:center;gap:8px;padding:12px 12px 10px}
 .top h2{font-size:17px;font-weight:600;flex:1}
 .top .step{font-size:13px;color:var(--muted)}
-.back{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:var(--field);border:1px solid var(--line-2);color:var(--ink)}
-.progress{height:3px;background:var(--line);border-radius:4px;margin:0 16px 4px;overflow:hidden}
-.progress i{display:block;height:100%;background:linear-gradient(90deg,#e3cb93,var(--blue));border-radius:4px;box-shadow:0 0 12px var(--glow);transition:width .3s}
-h1{font-size:26px;line-height:1.15;font-weight:600;letter-spacing:-.02em;margin:6px 0 6px}
+.back{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:var(--panel);border:1px solid var(--line-2);color:var(--ink)}
+.progress{height:4px;background:var(--line);border-radius:4px;margin:0 16px 4px;overflow:hidden}
+.progress i{display:block;height:100%;background:var(--blue);border-radius:4px;transition:width .3s}
+h1{font-family:var(--display);font-size:23px;line-height:1.2;font-weight:600;letter-spacing:-.01em;margin:8px 0 8px;color:var(--head)}
 .lead{color:var(--muted);margin-bottom:16px}
-.label{font-size:12px;font-weight:600;color:var(--blue);text-transform:uppercase;letter-spacing:.14em;margin:22px 0 10px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
-.note{display:flex;gap:10px;background:var(--blue-bg);border:1px solid rgba(198,167,94,.25);color:var(--blue-d);border-radius:14px;padding:12px;font-size:14px;margin-top:16px}
-.note.amber{background:var(--amber-bg);border-color:rgba(227,167,124,.25);color:var(--amber)}
-.note.green{background:var(--green-bg);color:var(--blue-d)}
+.label{font-size:14px;font-weight:600;color:var(--ink);margin:22px 0 10px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:14px}
+.note{display:flex;gap:10px;background:var(--blue-bg);border:1px solid var(--blue-line);color:var(--ink);border-radius:14px;padding:12px;font-size:14px;margin-top:16px}
+.note .ic{color:var(--blue-d)}
+.note.amber{background:var(--amber-bg);border-color:var(--amber-line);color:var(--ink)}
+.note.amber .ic{color:var(--amber)}
+.note.green{background:var(--blue-bg)}
 .brand{display:flex;align-items:center;gap:12px;margin:8px 0 18px}
-.logo{width:48px;height:48px;border-radius:14px;background:linear-gradient(180deg,rgba(220,194,133,.3),rgba(198,167,94,.12));border:1px solid rgba(220,194,133,.6);color:var(--blue-d);display:grid;place-items:center;font-size:26px;max-width:none;box-shadow:0 0 30px -6px var(--glow)}
-.brand b{font-size:15px;display:block;letter-spacing:.18em;text-transform:uppercase;font-weight:600}
+.logo{width:48px;height:48px;border-radius:14px;background:var(--blue);color:var(--on-gold);display:grid;place-items:center;font-size:26px;max-width:none}
+.brand b{font-family:var(--display);font-size:17px;display:block;font-weight:700;color:var(--head)}
 .brand small{color:var(--muted)}
-.unis{display:inline-flex;gap:6px;align-items:center;background:var(--field);border:1px solid var(--line-2);border-radius:999px;padding:6px 12px;font-size:13px;color:var(--muted);margin-bottom:8px}
-.role{display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px;margin-top:12px;transition:transform .1s,border-color .2s;backdrop-filter:blur(12px)}
-.role:active{transform:scale(.985);border-color:rgba(220,194,133,.5)}
-.role .ri{width:52px;height:52px;border-radius:14px;display:grid;place-items:center;font-size:26px;max-width:none;flex:none;border:1px solid rgba(198,167,94,.35)}
+.unis{display:inline-flex;gap:6px;align-items:center;background:var(--panel);border:1px solid var(--line-2);border-radius:999px;padding:6px 12px;font-size:13px;color:var(--muted);margin-bottom:8px}
+.role{display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:16px;margin-top:12px;transition:transform .1s,border-color .2s;box-shadow:var(--shadow)}
+.role:active{transform:scale(.985);border-color:var(--blue-line)}
+.role .ri{width:52px;height:52px;border-radius:14px;display:grid;place-items:center;font-size:26px;max-width:none;flex:none;border:1px solid var(--blue-line)}
 .role b{display:block;font-size:17px}
 .role span.t{color:var(--muted);font-size:14px}
 .role .chev{margin-left:auto;color:var(--soft)}
-.opt{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--field);border:1px solid var(--line);border-radius:14px;padding:13px 14px;margin-bottom:8px}
-.opt.on{border-color:rgba(220,194,133,.7);background:var(--blue-bg);box-shadow:0 0 24px -12px var(--glow)}
+.opt{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:13px 14px;margin-bottom:8px;min-height:52px}
+.opt.on{border-color:var(--blue);background:var(--blue-bg)}
 .opt .chk{margin-left:auto;width:22px;height:22px;border-radius:50%;border:1.5px solid var(--line-2);display:grid;place-items:center}
 .opt.on .chk{background:var(--blue);border-color:var(--blue)}
 .opt.on .chk::after{content:"";width:6px;height:10px;border:solid var(--on-gold);border-width:0 2px 2px 0;transform:rotate(45deg) translate(-1px,-1px)}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
-.chip{border:1px solid var(--line-2);background:var(--field);border-radius:999px;padding:8px 14px;font-size:14px;font-weight:500;white-space:nowrap;color:var(--ink)}
-.chip.on{border-color:transparent;background:linear-gradient(180deg,#e3cb93,var(--blue));color:var(--on-gold);box-shadow:0 6px 20px -8px var(--glow)}
+.chip{border:1px solid var(--line-2);background:var(--panel);border-radius:999px;padding:9px 14px;font-size:14px;font-weight:500;white-space:nowrap;color:var(--ink);min-height:40px}
+.chip.on{border-color:var(--blue);background:var(--blue);color:var(--on-gold);font-weight:600}
 .hscroll{display:flex;gap:8px;overflow-x:auto;padding:4px 16px 10px;scrollbar-width:none}
 .hscroll::-webkit-scrollbar{display:none}
-.check{display:flex;gap:10px;align-items:flex-start;font-size:14px;color:var(--ink);margin-top:12px;cursor:pointer}
+.check{display:flex;gap:10px;align-items:flex-start;font-size:14px;color:var(--ink);margin-top:14px;cursor:pointer}
 .check input{width:20px;height:20px;margin-top:1px;accent-color:var(--blue);flex:none}
 .field{margin-bottom:12px}
 .field label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(--ink)}
 .field label em{font-style:normal;color:var(--soft);font-weight:400}
-.input{width:100%;background:var(--field);border:1px solid var(--line-2);border-radius:12px;padding:12px;outline:none;color:var(--ink)}
+.input{width:100%;background:var(--field);border:1px solid var(--line-2);border-radius:12px;padding:12px;outline:none;color:var(--ink);min-height:46px}
 .input::placeholder{color:var(--soft)}
-.input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(198,167,94,.15)}
+.input:focus{border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-bg)}
 .input.err{border-color:var(--red)}
 textarea.input{min-height:84px;resize:vertical}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+/* сетка окон — как на лендинге: пары серые, окна жёлтые */
 .grid{width:100%;border-collapse:separate;border-spacing:4px;table-layout:fixed}
 .grid th{font-size:12px;color:var(--muted);font-weight:600;padding:2px}
-.grid th.pl{width:58px;text-align:left;font-size:11px;line-height:1.2}
-.grid td button{width:100%;height:40px;border-radius:10px;background:var(--field);border:1px solid var(--line);font-size:11px;color:var(--soft)}
-.grid td button.on{background:linear-gradient(180deg,rgba(220,194,133,.6),rgba(198,167,94,.35));border-color:rgba(220,194,133,.65);color:var(--ink);font-weight:600;box-shadow:0 0 16px -4px var(--glow)}
+.grid th.pl{width:58px;text-align:left;font-size:11px;line-height:1.2;color:var(--ink)}
+.grid th.pl span{color:var(--muted)}
+.grid td button{width:100%;height:44px;border-radius:10px;background:var(--pair);border:0;font-size:11px;color:var(--soft);transition:background-color .15s}
+.grid td button.on{background:var(--blue);color:var(--on-gold);font-weight:600}
 .legend{display:flex;gap:14px;font-size:12px;color:var(--muted);margin-top:8px;padding:0 4px}
-.legend i{display:inline-block;width:12px;height:12px;border-radius:4px;vertical-align:-2px;margin-right:4px;border:1px solid var(--line-2);background:var(--field)}
-.legend i.g{background:var(--blue);border-color:var(--blue)}
-.bottom{position:fixed;left:0;right:0;bottom:0;z-index:10;padding:14px 16px calc(14px + env(safe-area-inset-bottom));background:linear-gradient(to top,var(--bg) 65%,rgba(13,19,34,0))}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:4px;vertical-align:-2px;margin-right:4px;background:var(--pair)}
+.legend i.g{background:var(--blue)}
+
+.bottom{position:fixed;left:0;right:0;bottom:0;z-index:10;padding:14px 16px calc(14px + env(safe-area-inset-bottom));background:linear-gradient(to top,var(--bg) 65%,transparent)}
 .bottom .in{max-width:488px;margin:0 auto}
-.btn{width:100%;display:flex;align-items:center;justify-content:center;gap:8px;background:linear-gradient(180deg,#e3cb93,var(--blue));color:var(--on-gold);font-weight:600;font-size:16px;border-radius:999px;padding:15px;box-shadow:0 0 0 1px rgba(255,240,210,.25) inset,0 10px 30px -10px var(--glow)}
+.btn{width:100%;display:flex;align-items:center;justify-content:center;gap:8px;background:var(--blue);color:var(--on-gold);font-weight:600;font-size:16px;border-radius:14px;padding:15px;min-height:52px;transition:background .15s}
+.btn:hover{background:var(--blue-hi)}
 .btn:active{transform:scale(.99)}
 .btn[disabled]{opacity:.5}
-.btn.ghost{background:var(--field);color:var(--ink);border:1px solid var(--line-2);box-shadow:none}
-.btn.sm{padding:10px 16px;font-size:14px;width:auto}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line-2)}
+.btn.ghost:hover{background:var(--panel)}
+.btn.sm{padding:10px 16px;font-size:14px;width:auto;min-height:44px;border-radius:12px}
 .hint{text-align:center;color:var(--soft);font-size:13px;margin-top:8px}
-.vac{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:15px;margin:0 16px 12px;cursor:pointer;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);transition:border-color .2s}
-.vac:active{transform:scale(.99);border-color:rgba(220,194,133,.45)}
+
+/* карточки вакансий */
+.vac{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:15px;margin:0 16px 12px;cursor:pointer;transition:border-color .2s;box-shadow:var(--shadow)}
+.vac:active{transform:scale(.99);border-color:var(--blue-line)}
 .badges{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:9px}
-.badge{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:600;border-radius:999px;padding:3px 9px;background:var(--field);border:1px solid var(--line);color:var(--muted)}
+.badge{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:600;border-radius:999px;padding:3px 9px;background:var(--panel-2);border:1px solid var(--line);color:var(--muted)}
 .badge .ic{font-size:15px}
-.badge.g{background:var(--blue-bg);border-color:rgba(198,167,94,.35);color:var(--blue-d)}
-.badge.b{background:rgba(232,220,200,.07);border-color:var(--line-2);color:var(--ink)}
-.badge.a{background:var(--amber-bg);border-color:rgba(227,167,124,.3);color:var(--amber)}
-.badge.r{background:var(--red-bg);border-color:rgba(232,128,128,.3);color:var(--red)}
-.vac h3{font-size:18px;font-weight:600}
+.badge.g{background:var(--blue);border-color:var(--blue);color:var(--on-gold)}
+.badge.b{background:var(--panel-2);border-color:var(--line-2);color:var(--ink)}
+.badge.a{background:var(--amber-bg);border-color:var(--amber-line);color:var(--amber)}
+.badge.r{background:var(--red-bg);border-color:var(--red-line);color:var(--red)}
+.vac h3{font-size:18px;font-weight:600;color:var(--head)}
 .vac .co{color:var(--muted);font-size:14px;margin-bottom:8px}
 .meta{display:flex;gap:8px;align-items:flex-start;color:var(--ink);font-size:14px;margin-top:5px}
-.meta .ic{font-size:18px;color:var(--blue)}
-.pay{display:flex;align-items:baseline;justify-content:space-between;margin-top:12px;padding-top:11px;border-top:1px dashed var(--line-2)}
-.pay b{font-size:19px;color:var(--blue-d)}
+.meta .ic{font-size:18px;color:var(--muted)}
+.pay{display:flex;align-items:baseline;justify-content:space-between;margin-top:12px;padding-top:11px;border-top:1px solid var(--line)}
+.pay b{font-family:var(--display);font-size:17px;font-weight:600;color:var(--head)}
 .pay span{color:var(--muted);font-size:13px}
+
 .head{padding:16px 16px 6px}
-.hello{display:flex;align-items:center;justify-content:space-between}
-.hello b{font-size:22px;font-weight:600;letter-spacing:-.01em}
-.sum{display:flex;gap:10px;align-items:center;background:var(--field);border:1px solid var(--line);border-radius:14px;padding:10px 12px;margin-top:10px;font-size:13px;color:var(--muted)}
-.sum .ic{color:var(--blue)}
+.hello{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.hello b{font-family:var(--display);font-size:20px;font-weight:600;color:var(--head)}
+.sum{display:flex;gap:10px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 12px;margin-top:10px;font-size:13px;color:var(--muted)}
+.sum .ic{color:var(--blue-d)}
 .empty{text-align:center;padding:30px 24px;color:var(--muted)}
-.empty .ic{font-size:44px;max-width:none;color:var(--blue);margin-bottom:8px}
+.empty .ic{font-size:44px;max-width:none;color:var(--soft);margin-bottom:8px}
 .empty b{display:block;color:var(--ink);font-size:17px;margin-bottom:6px}
-.nav{position:fixed;left:0;right:0;bottom:0;z-index:10;background:rgba(13,19,34,.88);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+.nav{position:fixed;left:0;right:0;bottom:0;z-index:10;background:var(--bg-glass);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
 .nav .in{max-width:520px;margin:0 auto;display:flex}
-.nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:9px 0 8px;font-size:11px;color:var(--soft);font-weight:500}
-.nav button.on{color:var(--blue-d)}
-.nav button.on .ic{font-variation-settings:"FILL" 1,"wght" 500}
+.nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:9px 0 8px;font-size:11px;color:var(--soft);font-weight:500;position:relative}
+.nav button.on{color:var(--ink);font-weight:600}
+.nav button.on .ic{font-variation-settings:"FILL" 1,"wght" 500;color:var(--blue-d)}
 .kv{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
 .kv:last-child{border-bottom:0}
-.kv .ic{color:var(--blue);flex:none}
+.kv .ic{color:var(--muted);flex:none}
 .kv small{display:block;color:var(--muted);font-size:12px}
 .daysfit{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:8px}
-.daysfit div{text-align:center;font-size:12px;font-weight:600;border-radius:8px;padding:6px 0;background:var(--field);color:var(--soft)}
-.daysfit div.ok{background:var(--blue-bg);color:var(--blue-d);box-shadow:inset 0 0 0 1px rgba(198,167,94,.4)}
+.daysfit div{text-align:center;font-size:12px;font-weight:600;border-radius:8px;padding:6px 0;background:var(--panel-2);color:var(--soft)}
+.daysfit div.ok{background:var(--blue);color:var(--on-gold)}
 .daysfit div.no{background:var(--amber-bg);color:var(--amber)}
 ul.dots{padding-left:18px}
 ul.dots li{margin:4px 0}
-ul.dots li::marker{color:var(--blue)}
+ul.dots li::marker{color:var(--blue-d)}
 .success{text-align:center;padding:40px 20px 10px}
-.success .big{width:78px;height:78px;border-radius:50%;background:var(--blue-bg);border:1px solid rgba(220,194,133,.6);color:var(--blue-d);display:grid;place-items:center;margin:0 auto 16px;font-size:40px;max-width:none;box-shadow:0 0 50px -6px var(--glow)}
-.tariff{display:block;width:100%;text-align:left;background:var(--field);border:1px solid var(--line-2);border-radius:18px;padding:15px;margin-bottom:10px}
-.tariff.on{border-color:rgba(220,194,133,.7);background:linear-gradient(180deg,rgba(198,167,94,.16),rgba(198,167,94,.04));box-shadow:0 0 36px -16px var(--glow)}
+.success .big{width:78px;height:78px;border-radius:24px;background:var(--blue);color:var(--on-gold);display:grid;place-items:center;margin:0 auto 18px;font-size:40px;max-width:none}
+.tariff{display:block;width:100%;text-align:left;background:var(--panel);border:1px solid var(--line-2);border-radius:18px;padding:15px;margin-bottom:10px}
+.tariff.on{border-color:var(--blue);background:var(--blue-bg)}
 .tariff b{font-size:16px}
-.tariff .price{float:right;font-weight:600;color:var(--blue-d)}
+.tariff .price{float:right;font-family:var(--display);font-weight:600;color:var(--head)}
 .tariff p{color:var(--muted);font-size:13px;margin-top:4px}
-.demo{background:var(--amber-bg);color:var(--amber);font-size:12px;font-weight:600;text-align:center;padding:6px 10px;border-bottom:1px solid rgba(227,167,124,.25)}
-.toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--on-gold);padding:10px 16px;border-radius:12px;font-size:14px;font-weight:500;opacity:0;pointer-events:none;transition:.25s;z-index:50;max-width:90vw;text-align:center}
+.demo{background:var(--amber-bg);color:var(--amber);font-size:12px;font-weight:600;text-align:center;padding:6px 10px;border-bottom:1px solid var(--amber-line)}
+.toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-size:14px;font-weight:500;opacity:0;pointer-events:none;transition:.25s;z-index:50;max-width:90vw;text-align:center}
 .toast.on{opacity:1;transform:translateX(-50%)}
 .loader{display:flex;justify-content:center;padding:30px}
 .loader i{width:28px;height:28px;border:3px solid var(--line-2);border-top-color:var(--blue);border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.app-item{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px;margin:0 16px 10px}
-.app-item h4{font-size:16px}
+.app-item{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:14px;margin:0 16px 10px}
+.app-item h4{font-size:16px;color:var(--head)}
 .app-item .co{color:var(--muted);font-size:13px;margin-bottom:8px}
 .link{color:var(--blue-d);font-weight:600}
+a.link{text-decoration:none}
 .err-text{color:var(--red);font-size:13px;margin-top:6px;display:none}
+.center-screen{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:6px;padding:24px}
+.center-screen .logo{width:64px;height:64px;font-size:32px;margin-bottom:10px;border-radius:18px}
+.center-screen .btn{max-width:320px;margin-top:10px}
+.dot{position:absolute;top:6px;left:calc(50% + 8px);width:8px;height:8px;border-radius:50%;background:var(--blue)}
+.invite{margin-top:10px;padding:4px 12px;border-radius:14px;background:var(--blue-bg);border:1px solid var(--blue-line)}
+.invite .kv{padding:10px 0}
+.counts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid var(--line);text-align:center}
+.counts b{display:block;font-family:var(--display);font-size:19px;font-weight:600;color:var(--head)}
+.counts small{font-size:11px;color:var(--muted)}
+.steps-v{position:relative;margin:4px 0 14px;padding-left:6px}
+.sv{position:relative;display:flex;gap:14px;padding:0 0 16px}
+.sv:last-child{padding-bottom:0}
+.sv::before{content:"";position:absolute;left:7px;top:18px;bottom:-2px;width:2px;background:var(--line)}
+.sv:last-child::before{display:none}
+.sv i{flex:none;width:16px;height:16px;margin-top:3px;border-radius:50%;border:2px solid var(--line-2);background:var(--bg);position:relative;z-index:1}
+.sv.done i{background:var(--blue);border-color:var(--blue)}
+.sv.now i{border-color:var(--blue);box-shadow:0 0 0 4px var(--blue-bg)}
+.sv.bad i{background:var(--red);border-color:var(--red)}
+.sv b{display:block;font-size:15px}
+.sv small{display:block;color:var(--muted);font-size:13px}
+.sv:not(.done):not(.now):not(.bad) b{color:var(--muted)}
+.tabs{display:flex;gap:4px;padding:4px;background:var(--panel);border:1px solid var(--line);border-radius:14px;margin:4px 16px 12px;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tabs button{flex:1;white-space:nowrap;padding:9px 10px;border-radius:10px;font-size:13px;font-weight:600;color:var(--muted)}
+.tabs button.on{background:var(--blue);color:var(--on-gold)}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 16px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px}
+.stat b{display:block;font-family:var(--display);font-size:26px;font-weight:600;color:var(--head)}
+.stat small{color:var(--muted);font-size:12px}
+.paycard{margin-bottom:6px;border-color:var(--blue-line)}
+.cand{cursor:pointer}
+.cand:active{border-color:var(--blue-line)}
+.app-item .btn.sm{margin-top:10px}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
 <div class="app" id="app">
-<div class="demo" id="demoBar" hidden>Демо-режим: показываются примеры, данные не сохраняются</div>
+
+<!-- ============ СЛУЖЕБНЫЕ ============ -->
+<section class="screen" id="boot"><div class="center-screen"><span class="logo ic f">school</span><div class="loader"><i></i></div></div></section>
+<section class="screen" id="setup"><div class="pad center-screen">
+  <span class="logo ic f">build</span><h1>Аппка не подключена</h1>
+  <p class="lead">Команде: вставьте ссылку Apps Script (<b>/exec</b>) в <b>API_URL</b> в начале файла app.html и загрузите его на GitHub заново.</p>
+</div></section>
+<section class="screen" id="notg"><div class="pad center-screen">
+  <span class="logo ic f">send</span><h1>Откройте в <em class="s">Telegram</em></h1>
+  <p class="lead">StudentJob работает внутри Telegram: так мы знаем, кто откликается и кому отправлять уведомления.</p>
+  <a class="btn" id="openTgBtn" href="#">Открыть в Telegram <span class="ic">arrow_forward</span></a>
+</div></section>
+<section class="screen" id="fail"><div class="pad center-screen">
+  <span class="logo ic f">wifi_off</span><h1>Нет связи</h1>
+  <p class="lead" id="failText">Не получилось подключиться к серверу.</p>
+  <button class="btn" data-act="retryBoot">Попробовать снова</button>
+</div></section>
 
 <!-- ============ ВЫБОР РОЛИ ============ -->
 <section class="screen" id="role">
@@ -190,15 +271,20 @@ ul.dots li::marker{color:var(--blue)}
       <span class="ic chev">chevron_right</span>
     </button>
     <button class="role" data-act="employer">
-      <span class="ri ic f" style="background:rgba(232,220,200,.06);color:var(--ink);border-color:var(--line-2)">storefront</span>
+      <span class="ri ic f" style="background:var(--panel-2);color:var(--ink);border-color:var(--line-2)">storefront</span>
       <span><b>Я работодатель</b><span class="t">Найду студентов на нужные смены</span></span>
       <span class="ic chev">chevron_right</span>
     </button>
-    <div class="note"><span class="ic">info</span><span>Мы только запускаемся. Каждую вакансию команда StudentJob проверяет вручную. Для студентов сервис бесплатный.</span></div>
+    <button class="role" data-act="admin" id="roleAdmin" hidden>
+      <span class="ri ic f" style="background:var(--panel-2);color:var(--blue-d);border-color:var(--line-2)">admin_panel_settings</span>
+      <span><b>Панель команды</b><span class="t">Проверка вакансий, оплаты, сводка</span></span>
+      <span class="ic chev">chevron_right</span>
+    </button>
+    <div class="note"><span class="ic">info</span><span>Каждую вакансию команда StudentJob проверяет вручную. Для студентов сервис бесплатный.</span></div>
   </div>
 </section>
 
-<!-- ============ СТУДЕНТ: ШАГ 1 ============ -->
+<!-- ============ СТУДЕНТ: АНКЕТА ============ -->
 <section class="screen" id="st1">
   <div class="top"><button class="back" data-back><span class="ic">arrow_back</span></button><h2>Анкета</h2><span class="step">1 из 3</span></div>
   <div class="progress"><i style="width:33%"></i></div>
@@ -214,7 +300,6 @@ ul.dots li::marker{color:var(--blue)}
   <div class="bottom"><div class="in"><button class="btn" data-act="st1next">Далее <span class="ic">arrow_forward</span></button></div></div>
 </section>
 
-<!-- ============ СТУДЕНТ: ШАГ 2 ============ -->
 <section class="screen" id="st2">
   <div class="top"><button class="back" data-back><span class="ic">arrow_back</span></button><h2>Анкета</h2><span class="step">2 из 3</span></div>
   <div class="progress"><i style="width:66%"></i></div>
@@ -236,22 +321,21 @@ ul.dots li::marker{color:var(--blue)}
   <div class="bottom"><div class="in"><button class="btn" data-act="st2next">Далее <span class="ic">arrow_forward</span></button></div></div>
 </section>
 
-<!-- ============ СТУДЕНТ: ШАГ 3 ============ -->
 <section class="screen" id="st3">
   <div class="top"><button class="back" data-back><span class="ic">arrow_back</span></button><h2>Анкета</h2><span class="step">3 из 3</span></div>
   <div class="progress"><i style="width:100%"></i></div>
   <div class="pad">
-    <h1>Почти готово</h1>
+    <h1>Почти <em class="s">готово</em></h1>
     <p class="lead">Ставка и сферы помогут отсортировать вакансии</p>
     <div class="label">Желаемая ставка</div>
     <div class="chips" id="rateChips"></div>
-    <div class="label">Что интересно <span style="text-transform:none;font-weight:400">(можно несколько)</span></div>
+    <div class="label">Что интересно <span style="text-transform:none;letter-spacing:0;font-weight:400;color:var(--muted)">(можно несколько)</span></div>
     <div class="chips" id="sphereChips"></div>
     <label class="check"><input type="checkbox" id="hasExp"> <span>У меня уже есть опыт работы</span></label>
     <div class="label">Как к тебе обращаться</div>
     <div class="field"><input class="input" id="stName" placeholder="Имя" maxlength="60"></div>
     <div class="field"><label>Как с тобой связаться <em>(Telegram или телефон)</em></label><input class="input" id="stContact" placeholder="@username или +7…" maxlength="60"></div>
-    <label class="check"><input type="checkbox" id="stConsent"> <span>Согласен(на) на обработку персональных данных. Мои контакты передаются работодателю <b>только после моего отклика</b> на вакансию. Удалить данные можно в профиле.</span></label>
+    <label class="check"><input type="checkbox" id="stConsent"> <span>Согласен(на) на обработку персональных данных. Мои контакты получит <b>только работодатель, которому я откликнусь</b>. Удалить данные можно в профиле.</span></label>
     <p class="err-text" id="st3err">Заполни имя, контакт и дай согласие</p>
   </div>
   <div class="bottom"><div class="in"><button class="btn" data-act="st3save" id="st3btn">Показать вакансии <span class="ic">arrow_forward</span></button></div></div>
@@ -260,43 +344,40 @@ ul.dots li::marker{color:var(--blue)}
 <!-- ============ СТУДЕНТ: ЛЕНТА ============ -->
 <section class="screen" id="feed">
   <div class="head">
-    <div class="hello"><b id="helloName">Подборка</b><button class="back" data-act="reload" title="Обновить"><span class="ic">refresh</span></button></div>
+    <div class="hello"><b id="helloName">Подборка</b><button class="back" data-act="reloadFeed" aria-label="Обновить"><span class="ic">refresh</span></button></div>
     <div class="sum"><span class="ic f">event_available</span><span id="feedSum"></span></div>
   </div>
   <div class="hscroll" id="filterChips"></div>
   <div id="feedList"></div>
   <nav class="nav"><div class="in">
     <button class="on" data-tab="feed"><span class="ic">auto_awesome</span>Подборка</button>
-    <button data-tab="apps"><span class="ic">send</span>Отклики</button>
+    <button data-tab="apps"><span class="ic">send</span>Отклики<i class="dot" data-dot hidden></i></button>
     <button data-tab="profile"><span class="ic">person</span>Профиль</button>
   </div></nav>
 </section>
 
-<!-- ============ СТУДЕНТ: ВАКАНСИЯ ============ -->
 <section class="screen" id="vac">
   <div class="top"><button class="back" data-back><span class="ic">arrow_back</span></button><h2>Вакансия</h2></div>
   <div class="pad" id="vacBody"></div>
-  <div class="bottom"><div class="in"><button class="btn" data-act="toApply">Откликнуться <span class="ic">send</span></button></div></div>
+  <div class="bottom"><div class="in"><button class="btn" data-act="toApply" id="vacBtn">Откликнуться <span class="ic">send</span></button></div></div>
 </section>
 
-<!-- ============ СТУДЕНТ: ПОДТВЕРЖДЕНИЕ ОТКЛИКА ============ -->
 <section class="screen" id="apply">
   <div class="top"><button class="back" data-back><span class="ic">arrow_back</span></button><h2>Отклик</h2></div>
   <div class="pad">
-    <h1>Передать анкету работодателю?</h1>
+    <h1>Отправить <em class="s">анкету?</em></h1>
     <p class="lead" id="applyTo"></p>
     <div class="card" id="applyCard"></div>
-    <div class="note"><span class="ic">verified_user</span><span>Команда StudentJob передаст анкету работодателю в течение 24 часов и напишет тебе, когда будет ответ. Если работодатель просит деньги за обучение, форму или оформление — сразу сообщи нам.</span></div>
+    <div class="note"><span class="ic">verified_user</span><span>Анкету и контакт увидит только этот работодатель. Ответ придёт сюда и сообщением от бота. Если работодатель просит деньги за обучение, форму или оформление — сразу сообщи нам.</span></div>
   </div>
   <div class="bottom"><div class="in"><button class="btn" data-act="sendApply" id="applyBtn">Отправить отклик</button></div></div>
 </section>
 
-<!-- ============ СТУДЕНТ: ОТКЛИК ОТПРАВЛЕН ============ -->
 <section class="screen" id="applied">
   <div class="success">
     <div class="big ic f">check_circle</div>
-    <h1>Отклик отправлен</h1>
-    <p class="lead" id="appliedText">Мы передадим анкету работодателю в течение 24 часов и напишем тебе в Telegram.</p>
+    <h1>Отклик <em class="s">отправлен</em></h1>
+    <p class="lead" id="appliedText"></p>
   </div>
   <div class="pad">
     <button class="btn" data-tab="apps" style="margin-bottom:10px">Мои отклики</button>
@@ -304,10 +385,8 @@ ul.dots li::marker{color:var(--blue)}
   </div>
 </section>
 
-<!-- ============ СТУДЕНТ: МОИ ОТКЛИКИ ============ -->
 <section class="screen" id="apps">
-  <div class="head"><div class="hello"><b>Мои отклики</b><button class="back" data-act="reloadApps" title="Обновить"><span class="ic">refresh</span></button></div>
-  <p class="lead" style="margin:6px 0 4px;font-size:14px">Статус обновляет команда, обычно в течение дня</p></div>
+  <div class="head"><div class="hello"><b>Мои отклики</b><button class="back" data-act="reloadApps" aria-label="Обновить"><span class="ic">refresh</span></button></div></div>
   <div id="appsList"></div>
   <nav class="nav"><div class="in">
     <button data-tab="feed"><span class="ic">auto_awesome</span>Подборка</button>
@@ -316,15 +395,15 @@ ul.dots li::marker{color:var(--blue)}
   </div></nav>
 </section>
 
-<!-- ============ СТУДЕНТ: ПРОФИЛЬ ============ -->
 <section class="screen" id="profile">
   <div class="head"><div class="hello"><b>Профиль</b></div></div>
   <div class="pad" style="padding-top:6px">
     <div class="card" id="profCard"></div>
     <button class="btn ghost" data-act="editProfile" style="margin-top:12px"><span class="ic">edit</span>Изменить анкету</button>
+    <button class="btn ghost" data-act="employer" style="margin-top:10px"><span class="ic">storefront</span>Я работодатель</button>
     <button class="btn ghost" data-act="support" style="margin-top:10px"><span class="ic">support_agent</span>Написать команде</button>
-    <button class="btn ghost" data-act="switchRole" style="margin-top:10px"><span class="ic">swap_horiz</span>Я работодатель</button>
     <button class="btn ghost" data-act="deleteMe" style="margin-top:10px;color:var(--red)"><span class="ic">delete</span>Удалить мои данные</button>
+    <p class="hint" id="myId"></p>
   </div>
   <nav class="nav"><div class="in">
     <button data-tab="feed"><span class="ic">auto_awesome</span>Подборка</button>
@@ -333,7 +412,7 @@ ul.dots li::marker{color:var(--blue)}
   </div></nav>
 </section>
 
-<!-- ============ РАБОТОДАТЕЛЬ: ИНТРО ============ -->
+<!-- ============ РАБОТОДАТЕЛЬ ============ -->
 <section class="screen" id="emp0">
   <div class="top"><button class="back" data-back><span class="ic">arrow_back</span></button><h2>Для бизнеса</h2></div>
   <div class="pad">
@@ -341,26 +420,24 @@ ul.dots li::marker{color:var(--blue)}
     <p class="lead">Подбираем студентов AlmaU, КБТУ, КИМЭП и КазНУ, которые свободны именно в ваши часы и живут или учатся рядом.</p>
     <div class="card">
       <div class="kv"><span class="ic">edit_note</span><div><b>1. Вакансия по шаблону</b><small>График, обязанности и оплата — за 3 минуты</small></div></div>
-      <div class="kv"><span class="ic">verified</span><div><b>2. Проверка за 24 часа</b><small>Команда созвонится с вами и проверит компанию</small></div></div>
-      <div class="kv"><span class="ic">group</span><div><b>3. Подходящие кандидаты</b><small>Только те, у кого нет пар в часы вашей смены</small></div></div>
+      <div class="kv"><span class="ic">verified</span><div><b>2. Проверка за 24 часа</b><small>Команда созвонится с вами и опубликует вакансию</small></div></div>
+      <div class="kv"><span class="ic">group</span><div><b>3. Отклики в кабинете</b><small>Смотрите анкеты, приглашайте на собеседование и нанимайте прямо здесь</small></div></div>
     </div>
     <div class="label">Тарифы</div>
     <div class="card">
       <div class="kv"><span class="ic">rocket_launch</span><div><b>Пилот — бесплатно</b><small>Первая вакансия, чтобы попробовать сервис</small></div></div>
-      <div class="kv"><span class="ic">workspace_premium</span><div><b>Стандарт — <span class="priceTxt"></span></b><small>Гарантия: если за 7 дней меньше 3 подходящих кандидатов — вернём деньги</small></div></div>
+      <div class="kv"><span class="ic">workspace_premium</span><div><b>Стандарт — <span class="priceTxt"></span></b><small>Гарантия: если за 7 дней меньше <span class="guarTxt"></span> подходящих кандидатов — вернём деньги</small></div></div>
     </div>
-    <div class="note"><span class="ic">info</span><span>Мы только запускаемся в Алматы, поэтому работаем вручную и лично знакомимся с каждым заведением.</span></div>
   </div>
-  <div class="bottom"><div class="in"><button class="btn" data-go="emp1">Разместить вакансию <span class="ic">arrow_forward</span></button></div></div>
+  <div class="bottom"><div class="in"><button class="btn" data-act="newVacancy">Разместить вакансию <span class="ic">arrow_forward</span></button></div></div>
 </section>
 
-<!-- ============ РАБОТОДАТЕЛЬ: ШАГ 1 ============ -->
 <section class="screen" id="emp1">
-  <div class="top"><button class="back" data-back><span class="ic">arrow_back</span></button><h2>Вакансия</h2><span class="step">1 из 3</span></div>
+  <div class="top"><button class="back" data-back><span class="ic">arrow_back</span></button><h2>Новая вакансия</h2><span class="step">1 из 3</span></div>
   <div class="progress"><i style="width:33%"></i></div>
   <div class="pad">
-    <h1>О компании</h1>
-    <p class="lead">Нужно для проверки. Контакты студенты не увидят.</p>
+    <h1>О <em class="s">компании</em></h1>
+    <p class="lead">Нужно для проверки. Телефон и БИН студенты не увидят.</p>
     <div class="field"><label>Название заведения</label><input class="input" id="eCompany" maxlength="80" placeholder="Например, кофейня «Утро»"></div>
     <div class="field"><label>БИН / ИИН <em>(12 цифр)</em></label><input class="input" id="eBin" inputmode="numeric" maxlength="12" placeholder="000000000000"></div>
     <div class="field"><label>Сфера</label><select class="input" id="eType">
@@ -378,12 +455,11 @@ ul.dots li::marker{color:var(--blue)}
   <div class="bottom"><div class="in"><button class="btn" data-act="e1next">Далее <span class="ic">arrow_forward</span></button></div></div>
 </section>
 
-<!-- ============ РАБОТОДАТЕЛЬ: ШАГ 2 ============ -->
 <section class="screen" id="emp2">
-  <div class="top"><button class="back" data-back><span class="ic">arrow_back</span></button><h2>Вакансия</h2><span class="step">2 из 3</span></div>
+  <div class="top"><button class="back" data-back><span class="ic">arrow_back</span></button><h2>Новая вакансия</h2><span class="step">2 из 3</span></div>
   <div class="progress"><i style="width:66%"></i></div>
   <div class="pad">
-    <h1>Кого и когда ищете</h1>
+    <h1>Кого и <em class="s">когда</em> ищете</h1>
     <div class="field"><label>Должность</label><input class="input" id="ePosition" maxlength="60" placeholder="Бариста, кассир, курьер…"></div>
     <div class="label" style="margin-top:4px">Дни смен</div>
     <div class="chips" id="eDays"></div>
@@ -398,21 +474,20 @@ ul.dots li::marker{color:var(--blue)}
     <label class="check" style="margin-top:0"><input type="checkbox" id="eNoExp" checked> <span>Опыт не нужен, обучим на месте</span></label>
     <div class="field" style="margin-top:12px"><label>Обязанности</label><textarea class="input" id="eDuties" maxlength="500" placeholder="Что конкретно делать на смене"></textarea></div>
     <div class="field"><label>Требования <em>(необязательно)</em></label><textarea class="input" id="eReq" maxlength="400" placeholder="Например, санкнижка или готовность её оформить"></textarea></div>
-    <div class="label">Рядом с какими вузами <span style="text-transform:none;font-weight:400">(до 30 минут пути)</span></div>
+    <div class="label">Рядом с какими вузами <span style="text-transform:none;letter-spacing:0;font-weight:400;color:var(--muted)">(до 30 минут пути)</span></div>
     <div class="chips" id="eUnis"></div>
     <p class="err-text" id="e2err">Укажите должность, дни, время смены, оплату и обязанности</p>
   </div>
   <div class="bottom"><div class="in"><button class="btn" data-act="e2next">Далее <span class="ic">arrow_forward</span></button></div></div>
 </section>
 
-<!-- ============ РАБОТОДАТЕЛЬ: ШАГ 3 ============ -->
 <section class="screen" id="emp3">
-  <div class="top"><button class="back" data-back><span class="ic">arrow_back</span></button><h2>Вакансия</h2><span class="step">3 из 3</span></div>
+  <div class="top"><button class="back" data-back><span class="ic">arrow_back</span></button><h2>Новая вакансия</h2><span class="step">3 из 3</span></div>
   <div class="progress"><i style="width:100%"></i></div>
   <div class="pad">
-    <h1>Тариф и проверка</h1>
+    <h1>Тариф и <em class="s">проверка</em></h1>
     <button class="tariff on" data-tariff="Пилот"><span class="price">0 ₸</span><b>Пилот</b><p>Первая вакансия бесплатно — попробовать сервис</p></button>
-    <button class="tariff" data-tariff="Стандарт"><span class="price priceTxt"></span><b>Стандарт</b><p>Если за 7 дней будет меньше 3 подходящих кандидатов — вернём деньги. Оплата через Kaspi после проверки компании: пришлём счёт.</p></button>
+    <button class="tariff" data-tariff="Стандарт"><span class="price priceTxt"></span><b>Стандарт</b><p>Если за 7 дней будет меньше <span class="guarTxt"></span> подходящих кандидатов — вернём деньги. Оплата через Kaspi после проверки вакансии.</p></button>
     <div class="label">Так студенты увидят вакансию</div>
     <div id="ePreview" style="margin:0 -16px"></div>
     <label class="check"><input type="checkbox" id="eRules"> <span>Подтверждаю: вакансия реальная, график и оплата указаны честно, мы не берём со студентов деньги за обучение, форму или оформление.</span></label>
@@ -421,22 +496,76 @@ ul.dots li::marker{color:var(--blue)}
   <div class="bottom"><div class="in"><button class="btn" data-act="sendVacancy" id="e3btn">Отправить на проверку</button></div></div>
 </section>
 
-<!-- ============ РАБОТОДАТЕЛЬ: ГОТОВО ============ -->
 <section class="screen" id="empDone">
   <div class="success">
     <div class="big ic f">hourglass_top</div>
-    <h1>Заявка на проверке</h1>
+    <h1>Заявка <em class="s">на проверке</em></h1>
     <p class="lead" id="empDoneText"></p>
   </div>
   <div class="pad">
-    <div class="card">
-      <div class="kv"><span class="ic">call</span><div><b>В течение 24 часов</b><small>Позвоним или напишем, уточним детали и проверим компанию</small></div></div>
-      <div class="kv"><span class="ic">campaign</span><div><b>Публикация</b><small>После проверки вакансия появится у студентов с подходящими окнами</small></div></div>
-      <div class="kv"><span class="ic">group</span><div><b>Кандидаты</b><small>Анкеты откликнувшихся студентов пришлём вам в Telegram или WhatsApp</small></div></div>
+    <div class="steps-v">
+      <div class="sv done"><i></i><div><b>Заявка отправлена</b><small>Только что</small></div></div>
+      <div class="sv now"><i></i><div><b>Проверка командой</b><small>Позвоним в течение 24 часов, проверим компанию</small></div></div>
+      <div class="sv"><i></i><div><b>Публикация</b><small>Студенты с подходящими окнами увидят вакансию</small></div></div>
+      <div class="sv"><i></i><div><b>Отклики в кабинете</b><small>Приглашайте на собеседование и нанимайте в «Мои вакансии»</small></div></div>
     </div>
-    <button class="btn ghost" data-go="emp1" style="margin-top:12px" data-act="newVacancy">Разместить ещё одну вакансию</button>
-    <button class="btn ghost" data-act="support" style="margin-top:10px">Написать команде</button>
+    <button class="btn" data-act="empHome" style="margin-top:16px">Перейти в мои вакансии <span class="ic">arrow_forward</span></button>
   </div>
+</section>
+
+<section class="screen" id="empHome">
+  <div class="head">
+    <div class="hello"><b>Мои вакансии</b><button class="back" data-act="reloadEmp" aria-label="Обновить"><span class="ic">refresh</span></button></div>
+    <p class="lead" style="margin:6px 0 0;font-size:14px">Статусы, отклики и кандидаты</p>
+  </div>
+  <div class="pad" style="padding-top:8px"><button class="btn" data-act="newVacancy"><span class="ic">add</span>Новая вакансия</button></div>
+  <div id="empList"></div>
+  <div class="pad"><button class="btn ghost" data-act="support"><span class="ic">support_agent</span>Написать команде</button>
+  <button class="btn ghost" data-act="student" style="margin-top:10px"><span class="ic">school</span>Я студент</button></div>
+</section>
+
+<section class="screen" id="empVac">
+  <div class="top"><button class="back" data-back><span class="ic">arrow_back</span></button><h2>Вакансия</h2><button class="back" data-act="reloadEmpVac" aria-label="Обновить"><span class="ic">refresh</span></button></div>
+  <div class="pad" id="empVacBody"></div>
+  <div class="tabs" id="candTabs"></div>
+  <div id="candList"></div>
+  <div class="pad" id="empVacFoot"></div>
+</section>
+
+<section class="screen" id="empCand">
+  <div class="top"><button class="back" data-back><span class="ic">arrow_back</span></button><h2>Кандидат</h2></div>
+  <div class="pad" id="candBody"></div>
+  <div class="bottom"><div class="in" id="candActions"></div></div>
+</section>
+
+<section class="screen" id="empInvite">
+  <div class="top"><button class="back" data-back><span class="ic">arrow_back</span></button><h2>Приглашение</h2></div>
+  <div class="pad">
+    <h1>Пригласить на <em class="s">собеседование</em></h1>
+    <p class="lead" id="inviteWho"></p>
+    <div class="row2">
+      <div class="field"><label>Дата</label><input class="input" type="date" id="iDate"></div>
+      <div class="field"><label>Время</label><input class="input" type="time" id="iTime" value="16:00"></div>
+    </div>
+    <div class="field"><label>Где</label><input class="input" id="iPlace" maxlength="140"></div>
+    <div class="field"><label>Сообщение кандидату</label><textarea class="input" id="iMsg" maxlength="400"></textarea></div>
+    <p class="hint" style="text-align:left">Кандидат получит приглашение в приложении и сообщением от бота, а также увидит ваш телефон и Telegram для связи.</p>
+    <p class="err-text" id="iErr">Укажите дату, время и место</p>
+  </div>
+  <div class="bottom"><div class="in"><button class="btn" data-act="sendInvite" id="iBtn">Отправить приглашение</button></div></div>
+</section>
+
+<!-- ============ ПАНЕЛЬ КОМАНДЫ ============ -->
+<section class="screen" id="admHome">
+  <div class="head"><div class="hello"><b>Панель <em class="s">команды</em></b><button class="back" data-act="reloadAdm" aria-label="Обновить"><span class="ic">refresh</span></button></div></div>
+  <div class="tabs" id="admTabs"></div>
+  <div id="admBody"></div>
+  <div class="pad"><button class="btn ghost" data-act="toRole"><span class="ic">swap_horiz</span>Сменить роль</button></div>
+</section>
+
+<section class="screen" id="admVac">
+  <div class="top"><button class="back" data-back><span class="ic">arrow_back</span></button><h2>Проверка вакансии</h2></div>
+  <div class="pad" id="admVacBody"></div>
 </section>
 
 <div class="toast" id="toast"></div>
@@ -450,250 +579,267 @@ const UNIS = ["AlmaU","КБТУ","КИМЭП","КазНУ им. аль-Фара�
 const DISTRICTS = ["Бостандыкский","Алмалинский","Медеуский","Ауэзовский","Алатауский","Жетысуский","Наурызбайский","Турксибский"];
 const DAYS = ["Пн","Вт","Ср","Чт","Пт","Сб","Вс"];
 const PERIODS = [
-  {k:"утро",  from:8,  to:12, label:"Утро",  t:"08–12"},
-  {k:"день",  from:12, to:16, label:"День",  t:"12–16"},
-  {k:"вечер", from:16, to:20, label:"Вечер", t:"16–20"},
-  {k:"поздно",from:20, to:23, label:"Поздно",t:"20–23"}
+  {k:"утро",from:8,to:12,label:"Утро",t:"08–12"},
+  {k:"день",from:12,to:16,label:"День",t:"12–16"},
+  {k:"вечер",from:16,to:20,label:"Вечер",t:"16–20"},
+  {k:"поздно",from:20,to:23,label:"Поздно",t:"20–23"}
 ];
 const RATES = [{v:0,t:"Не важно"},{v:1500,t:"от 1 500 ₸/ч"},{v:2000,t:"от 2 000 ₸/ч"},{v:2500,t:"от 2 500 ₸/ч"},{v:3000,t:"от 3 000 ₸/ч"}];
 const SPHERES = ["Кофейни и общепит","Розница","Доставка и ПВЗ","Образование","Ивенты","Офис"];
-const DEMO_VACANCIES = [
-  {id:"DEMO-1",company:"Кофейня (пример)",type:"Кафе и рестораны",district:"Бостандыкский",address:"Пример адреса, рядом с AlmaU",position:"Бариста",days:"Пн,Вт,Ср,Чт,Пт",from:"18:00",to:"22:00",pay:"2000",payout:"Каждую неделю",noExp:"да",duties:"Готовить кофе по техкартам, принимать заказы, поддерживать чистоту за стойкой",requirements:"Санкнижка или готовность оформить",nearUnis:"AlmaU, КазНУ им. аль-Фараби"},
-  {id:"DEMO-2",company:"Пункт выдачи (пример)",type:"Доставка и ПВЗ",district:"Медеуский",address:"Пример адреса, рядом с КИМЭП",position:"Сотрудник ПВЗ",days:"Сб,Вс",from:"10:00",to:"18:00",pay:"1800",payout:"После каждой смены",noExp:"да",duties:"Выдача заказов, приёмка товара",requirements:"",nearUnis:"КИМЭП, КБТУ"},
-  {id:"DEMO-3",company:"Учебный центр (пример)",type:"Образовательный центр",district:"Алмалинский",address:"Пример адреса, рядом с КБТУ",position:"Администратор",days:"Вт,Чт",from:"16:00",to:"20:00",pay:"2200",payout:"Два раза в месяц",noExp:"нет",duties:"Запись учеников, звонки, порядок в классах",requirements:"Грамотная речь",nearUnis:"КБТУ"}
-];
+const ST_STUDENT = {
+  "новый":{t:"Отправлен",c:"a",h:"Работодатель ещё не открыл анкету"},
+  "просмотрен":{t:"Просмотрен",c:"b",h:"Работодатель посмотрел твою анкету"},
+  "собеседование":{t:"Собеседование",c:"g",h:"Тебя пригласили на собеседование"},
+  "вышел на работу":{t:"Тебя взяли!",c:"g",h:"Поздравляем! Договорись о первой смене с работодателем"},
+  "отказ":{t:"Отказ",c:"r",h:"Не расстраивайся — новые смены появляются каждый день"}
+};
+const ST_EMP = {"новый":{t:"Новый",c:"a"},"просмотрен":{t:"Просмотрен",c:"b"},"собеседование":{t:"Собеседование",c:"g"},"вышел на работу":{t:"Нанят",c:"g"},"отказ":{t:"Отказ",c:"r"}};
+const ST_VAC = {"на проверке":{t:"На проверке",c:"a"},"опубликована":{t:"Опубликована",c:"g"},"закрыта":{t:"Закрыта",c:""},"отклонена":{t:"Отклонена",c:"r"}};
+const ST_PAY = {"ждём оплату":{t:"Ждёт оплаты",c:"a"},"оплата заявлена":{t:"Оплата проверяется",c:"b"},"оплачено":{t:"Оплачено",c:"g"},"возврат":{t:"Возврат",c:"r"}};
 
-/* ---------- Telegram и окружение ---------- */
-const tg = window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData !== undefined ? window.Telegram.WebApp : null;
+/* ---------- Telegram ---------- */
+const tg = (window.Telegram && window.Telegram.WebApp) || null;
 const inTg = !!(tg && tg.initData);
 const tgUser = inTg && tg.initDataUnsafe && tg.initDataUnsafe.user ? tg.initDataUnsafe.user : null;
-const qs = new URLSearchParams(location.search);
-const SOURCE = ((inTg && tg.initDataUnsafe.start_param) || qs.get("startapp") || qs.get("src") || "direct").slice(0,64);
-const DEMO = !CONFIG.API_URL;
-if (inTg){ try{ tg.ready(); tg.expand(); tg.setHeaderColor("#0d1322"); tg.setBackgroundColor("#0d1322"); if(tg.setBottomBarColor) tg.setBottomBarColor("#0d1322"); }catch(e){} }
+const SOURCE = String((inTg && tg.initDataUnsafe.start_param) || "direct").slice(0,64);
+/* Тема: подстраиваемся под светлый или тёмный Telegram */
+function applyTheme(){
+  const light = inTg && tg.colorScheme==="light";
+  document.documentElement.classList.toggle("light", light);
+  const c = light ? "#F4F6F9" : "#121A2E";
+  const m = document.querySelector('meta[name="theme-color"]'); if(m) m.setAttribute("content", c);
+  if(inTg){ try{ tg.setHeaderColor(c); tg.setBackgroundColor(c); if(tg.setBottomBarColor) tg.setBottomBarColor(c); }catch(e){} }
+}
+if (inTg){ try{ tg.ready(); tg.expand(); applyTheme(); tg.onEvent("themeChanged", applyTheme); }catch(e){} }
 
-/* ---------- хранилище (только удобство, источник правды — таблица) ---------- */
+/* ---------- состояние ---------- */
 const store = {
   get(k){ try{ return JSON.parse(localStorage.getItem("sj_"+k)); }catch(e){ return null; } },
   set(k,v){ try{ localStorage.setItem("sj_"+k, JSON.stringify(v)); }catch(e){} },
   del(k){ try{ localStorage.removeItem("sj_"+k); }catch(e){} }
 };
-const anonId = store.get("anon") || ("web-" + Math.random().toString(36).slice(2,10));
-store.set("anon", anonId);
-const USER_ID = tgUser ? String(tgUser.id) : anonId;
-
-/* ---------- состояние ---------- */
+let me = {isAdmin:false, vacancies:0, id:""};
 let profile = store.get("profile") || null;
-const draft = profile ? JSON.parse(JSON.stringify(profile)) : {uni:"",district:"",windows:{},rate:0,spheres:[],exp:false,name:"",contact:""};
-let vacancies = [];
-let loaded = false;
-let current = null;            // открытая вакансия
-let filter = "fit";
+const blank = () => ({uni:"",district:"",windows:{},rate:0,spheres:[],exp:false,name:"",contact:""});
+let draft = blank();
+let vacancies = [], myApps = [], feedLoaded = false, current = null, filter = "fit";
 const emp = {days:["Пн","Вт","Ср","Чт","Пт"], unis:[], tariff:"Пилот"};
-const stack = [];
-let currentScreen = null;
-const ROOTS = ["role","feed","apps","profile","applied","empDone"];
+let empVacs = [], curVac = null, applicants = [], candTab = "new", curCand = null;
+let adm = null, admTab = "pending", curAdm = null;
+const stack = []; let currentScreen = null;
+const ROOTS = ["boot","setup","notg","fail","role","feed","apps","profile","applied","empDone","empHome","admHome"];
 
 /* ---------- утилиты ---------- */
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const money = n => Number(n||0).toLocaleString("ru-RU").replace(/,/g," ") + " ₸";
-function toast(t){ const el=$("toast"); el.textContent=t; el.classList.add("on"); clearTimeout(toast._t); toast._t=setTimeout(()=>el.classList.remove("on"),2600); }
-function haptic(type){ try{ if(inTg && tg.HapticFeedback){ type==="ok"?tg.HapticFeedback.notificationOccurred("success"):tg.HapticFeedback.impactOccurred("light"); } }catch(e){} }
-function hours(t){ if(!t) return null; const m=String(t).trim().match(/^(\d{1,2})(?:[:.](\d{2}))?/); if(!m) return null; return Number(m[1]) + (m[2]?Number(m[2])/60:0); }
-function hhmm(t){ const h=hours(t); if(h==null) return ""; const H=Math.floor(h), M=Math.round((h-H)*60); return String(H).padStart(2,"0")+":"+String(M).padStart(2,"0"); }
+const money = n => Number(n||0).toLocaleString("ru-RU").replace(/[\s,]/g," ") + " ₸";
+function toast(t){ const el=$("toast"); el.textContent=t; el.classList.add("on"); clearTimeout(toast._t); toast._t=setTimeout(()=>el.classList.remove("on"),2800); }
+function haptic(ok){ try{ if(inTg && tg.HapticFeedback){ ok?tg.HapticFeedback.notificationOccurred("success"):tg.HapticFeedback.impactOccurred("light"); } }catch(e){} }
+function hours(t){ const m=String(t||"").trim().match(/^(\d{1,2})(?:[:.](\d{2}))?/); if(!m) return null; return Number(m[1])+(m[2]?Number(m[2])/60:0); }
+function hhmm(t){ const h=hours(t); if(h==null) return ""; const H=Math.floor(h),M=Math.round((h-H)*60); return String(H).padStart(2,"0")+":"+String(M).padStart(2,"0"); }
+function fmtDate(s){ const m=String(s||"").match(/^(\d{4})-(\d{2})-(\d{2})/); if(!m) return String(s||""); const mon=["янв","фев","мар","апр","мая","июн","июл","авг","сен","окт","ноя","дек"]; return Number(m[3])+" "+mon[Number(m[2])-1]; }
+function cap(s){ s=String(s).toLowerCase(); return s.charAt(0).toUpperCase()+s.slice(1,2); }
 function parseDays(s){
   const out=[]; if(!s) return out;
-  const norm=String(s).replace(/[–—]/g,"-").replace(/\s+/g,"");
-  norm.split(/[,;/]/).forEach(tok=>{
-    if(!tok) return;
-    const r=tok.split("-");
-    if(r.length===2){ const a=DAYS.indexOf(cap(r[0])), b=DAYS.indexOf(cap(r[1])); if(a>-1&&b>-1){ for(let i=a;i<=b;i++) if(!out.includes(DAYS[i])) out.push(DAYS[i]); } }
+  String(s).replace(/[–—]/g,"-").replace(/\s+/g,"").split(/[,;/]/).forEach(tok=>{
+    if(!tok) return; const r=tok.split("-");
+    if(r.length===2){ const a=DAYS.indexOf(cap(r[0])), b=DAYS.indexOf(cap(r[1])); if(a>-1&&b>-1) for(let i=a;i<=b;i++) if(!out.includes(DAYS[i])) out.push(DAYS[i]); }
     else { const d=cap(tok); if(DAYS.includes(d)&&!out.includes(d)) out.push(d); }
   });
   return out;
 }
 function prettyDays(s){
-  const d=parseDays(s); if(!d.length) return String(s||"");
-  const idx=d.map(x=>DAYS.indexOf(x)).sort((a,b)=>a-b); const parts=[]; let i=0;
-  while(i<idx.length){ let j=i; while(j+1<idx.length && idx[j+1]===idx[j]+1) j++;
-    parts.push(j-i>=2 ? DAYS[idx[i]]+"–"+DAYS[idx[j]] : idx.slice(i,j+1).map(k=>DAYS[k]).join(", ")); i=j+1; }
+  const idx=parseDays(s).map(x=>DAYS.indexOf(x)).sort((a,b)=>a-b); if(!idx.length) return String(s||"");
+  const parts=[]; let i=0;
+  while(i<idx.length){ let j=i; while(j+1<idx.length&&idx[j+1]===idx[j]+1) j++; parts.push(j-i>=2?DAYS[idx[i]]+"–"+DAYS[idx[j]]:idx.slice(i,j+1).map(k=>DAYS[k]).join(", ")); i=j+1; }
   return parts.join(", ");
 }
-function cap(s){ s=String(s).toLowerCase(); return s.charAt(0).toUpperCase()+s.slice(1,2); }
 function yes(v){ return /^(да|yes|true|1|\+)$/i.test(String(v||"").trim()); }
 function freeHours(w){ let h=0; DAYS.forEach(d=>(w[d]||[]).forEach(k=>{ const p=PERIODS.find(x=>x.k===k); if(p) h+=p.to-p.from; })); return h; }
 function windowsText(w){ return DAYS.filter(d=>(w[d]||[]).length).map(d=>d+": "+w[d].join(", ")).join("; "); }
-
-/* совпадение вакансии с окнами студента */
-function fit(v, w){
-  const vd=parseDays(v.days), f=hours(v.from), t=hours(v.to);
-  const byDay={}; let ok=0;
-  vd.forEach(d=>{
-    const free=w[d]||[];
-    let need = (f!=null&&t!=null&&t>f) ? PERIODS.filter(p=>f<p.to && t>p.from).map(p=>p.k) : null;
-    const good = need ? (need.length>0 && need.every(k=>free.includes(k))) : free.length>0;
-    byDay[d]=good; if(good) ok++;
-  });
-  return {ok, total:vd.length, byDay};
+function parseWindows(s){ const w={}; String(s||"").split(";").forEach(part=>{ const m=part.split(":"); if(m.length<2) return; const d=cap(m[0].trim()); if(!DAYS.includes(d)) return; w[d]=m[1].split(",").map(x=>x.trim()).filter(x=>PERIODS.some(p=>p.k===x)); }); return w; }
+function fit(v,w){
+  const vd=parseDays(v.days), f=hours(v.from), t=hours(v.to), byDay={}; let ok=0;
+  vd.forEach(d=>{ const free=w[d]||[]; const need=(f!=null&&t!=null&&t>f)?PERIODS.filter(p=>f<p.to&&t>p.from).map(p=>p.k):null;
+    const good=need?(need.length>0&&need.every(k=>free.includes(k))):free.length>0; byDay[d]=good; if(good) ok++; });
+  return {ok,total:vd.length,byDay};
 }
-function near(v){
-  if(!profile) return false;
-  const u=String(v.nearUnis||"");
-  return (profile.uni && profile.uni!=="Другой вуз" && u.indexOf(profile.uni)>-1) || (profile.district && v.district===profile.district);
-}
+function near(v){ if(!profile) return false; const u=String(v.nearUnis||""); return (profile.uni&&profile.uni!=="Другой вуз"&&u.indexOf(profile.uni)>-1)||(profile.district&&v.district===profile.district); }
+function badge(map,s){ const x=map[s]||{t:s||"—",c:""}; return `<span class="badge ${x.c}">${esc(x.t)}</span>`; }
+function tgLink(c){ const m=String(c||"").trim().match(/^@?([A-Za-z0-9_]{4,32})$/); return m && /[A-Za-z]/.test(m[1]) && String(c).trim().startsWith("@") ? "https://t.me/"+m[1] : ""; }
+function telLink(c){ const d=String(c||"").replace(/[^\d+]/g,""); return d.replace(/\D/g,"").length>=10 ? "tel:"+d : ""; }
+function contactHtml(c){ const t=tgLink(c), p=telLink(c); return t?`<a class="link" href="${t}" data-ext>${esc(c)}</a>`:p?`<a class="link" href="${p}">${esc(c)}</a>`:esc(c); }
+function openLink(url){ if(inTg){ try{ if(url.indexOf("https://t.me/")===0) tg.openTelegramLink(url); else tg.openLink(url); return; }catch(e){} } window.open(url,"_blank"); }
+function loader(id){ $(id).innerHTML='<div class="loader"><i></i></div>'; }
+function emptyBox(icon,title,text){ return `<div class="empty"><span class="ic">${icon}</span><b>${esc(title)}</b>${esc(text)}</div>`; }
 
 /* ---------- API ---------- */
-async function apiGet(params){
-  const r = await fetch(CONFIG.API_URL + "?" + new URLSearchParams(params).toString());
-  if(!r.ok) throw new Error("HTTP "+r.status);
-  return r.json();
-}
-async function apiPost(type, data){
-  const r = await fetch(CONFIG.API_URL, {method:"POST", body: JSON.stringify({type, data})});
-  if(!r.ok) throw new Error("HTTP "+r.status);
-  const j = await r.json(); if(!j.ok) throw new Error(j.error||"server");
+async function api(action, data){
+  const r = await fetch(CONFIG.API_URL, {method:"POST", body: JSON.stringify({action, data:data||{}, initData: inTg ? tg.initData : ""})});
+  if(!r.ok) throw new Error("NET");
+  const j = await r.json(); if(!j.ok) throw new Error(j.error||"SERVER");
   return j;
 }
-function track(name, details){
-  if(DEMO) return;
-  try{ fetch(CONFIG.API_URL,{method:"POST",keepalive:true,body:JSON.stringify({type:"event",data:{tgId:USER_ID,event:name,source:SOURCE,details:details||""}})}).catch(()=>{}); }catch(e){}
+function errMsg(e){
+  const m=String(e&&e.message||e);
+  if(m==="AUTH"||m==="AUTH_OLD") return "Сессия устарела. Закрой и снова открой приложение";
+  if(m==="NO_TG") return "Открой StudentJob через Telegram";
+  if(m==="FORBIDDEN") return "Нет доступа";
+  if(m==="VACANCY_CLOSED") return "Вакансия уже закрыта";
+  if(m==="NET"||/fetch|network/i.test(m)) return "Нет связи с сервером. Проверь интернет";
+  return "Ошибка: "+m;
 }
-function baseUser(){ return {tgId:USER_ID, username: tgUser&&tgUser.username ? "@"+tgUser.username : "", source:SOURCE}; }
+function track(name, details){ try{ fetch(CONFIG.API_URL,{method:"POST",keepalive:true,body:JSON.stringify({action:"event",data:{tgId:tgUser?String(tgUser.id):"",event:name,source:SOURCE,details:details||""}})}).catch(()=>{}); }catch(e){} }
+function askWrite(){ try{ if(inTg && tg.isVersionAtLeast && tg.isVersionAtLeast("6.9")) tg.requestWriteAccess(()=>{}); }catch(e){} }
 
 /* ---------- навигация ---------- */
 function show(id, push){
   if(push!==false && currentScreen && currentScreen!==id) stack.push(currentScreen);
-  if(ROOTS.includes(id)) stack.length = 0;
+  if(ROOTS.includes(id)) stack.length=0;
   document.querySelectorAll(".screen").forEach(s=>s.classList.toggle("on", s.id===id));
-  currentScreen = id; window.scrollTo(0,0);
+  currentScreen=id; window.scrollTo(0,0);
   if(inTg){ try{ stack.length ? tg.BackButton.show() : tg.BackButton.hide(); }catch(e){} }
   onEnter(id);
 }
-function back(){ const prev = stack.pop(); if(prev) show(prev,false); else show(profile?"feed":"role",false); }
+function back(){ const prev=stack.pop(); if(prev) show(prev,false); else show("role",false); }
 if(inTg){ try{ tg.BackButton.onClick(back); }catch(e){} }
-
 function onEnter(id){
   if(id==="feed") loadFeed();
   if(id==="apps") loadApps();
   if(id==="profile") renderProfile();
   if(id==="emp3") renderPreview();
+  if(id==="empHome") loadEmp();
+  if(id==="admHome") loadAdm();
 }
 
-/* ---------- построение форм ---------- */
+/* ---------- запуск ---------- */
+async function boot(){
+  buildStudentForms(); buildEmployerForms();
+  if(!CONFIG.API_URL){ show("setup"); return; }
+  if(!inTg){ $("openTgBtn").href=CONFIG.BOT_LINK; show("notg"); return; }
+  show("boot");
+  track("app_open","telegram");
+  try{
+    me = await api("me");
+    $("roleAdmin").hidden = !me.isAdmin;
+    if(me.price) CONFIG.PRICE = me.price; if(me.guarantee) CONFIG.GUARANTEE = me.guarantee;
+    buildEmployerForms();
+    if(!profile && me.student && me.student.name){
+      profile = {uni:me.student.uni, district:me.student.district, windows:parseWindows(me.student.windows), rate:me.student.rate||0,
+        spheres:String(me.student.spheres||"").split(",").map(s=>s.trim()).filter(Boolean), exp:!!me.student.exp, name:me.student.name, contact:me.student.contact, age18:true, consent:true};
+      store.set("profile", profile);
+    }
+  }catch(e){ $("failText").textContent=errMsg(e); show("fail"); return; }
+  if(SOURCE==="admin" && me.isAdmin) show("admHome");
+  else if(/^emp/i.test(SOURCE)) goEmployer();
+  else if(profile) show("feed");
+  else show("role");
+}
+function goEmployer(){ if(me.vacancies>0) show("empHome"); else { show("role"); show("emp0"); } }
+
+/* ---------- анкета студента ---------- */
 function buildStudentForms(){
   $("uniList").innerHTML = UNIS.map(u=>`<button class="opt${draft.uni===u?" on":""}" data-uni="${esc(u)}"><span class="ic" style="color:var(--blue-d)">account_balance</span><b>${esc(u)}</b><span class="chk"></span></button>`).join("");
   $("districtChips").innerHTML = DISTRICTS.map(d=>`<button class="chip${draft.district===d?" on":""}" data-district="${esc(d)}">${esc(d)}</button>`).join("");
-  let g = "<tr><th class='pl'></th>"+DAYS.map(d=>`<th>${d}</th>`).join("")+"</tr>";
-  PERIODS.forEach(p=>{
-    g += `<tr><th class="pl">${p.label}<br><span style="font-weight:400">${p.t}</span></th>` + DAYS.map(d=>{
-      const on=(draft.windows[d]||[]).includes(p.k);
-      return `<td><button class="${on?"on":""}" data-win="${d}|${p.k}" aria-label="${d} ${p.label}">${on?"своб":""}</button></td>`;
-    }).join("") + "</tr>";
-  });
-  $("winGrid").innerHTML = g;
-  updateHours();
+  let g="<tr><th class='pl'></th>"+DAYS.map(d=>`<th>${d}</th>`).join("")+"</tr>";
+  PERIODS.forEach(p=>{ g+=`<tr><th class="pl">${p.label}<br><span style="font-weight:400">${p.t}</span></th>`+DAYS.map(d=>{ const on=(draft.windows[d]||[]).includes(p.k); return `<td><button class="${on?"on":""}" data-win="${d}|${p.k}" aria-label="${d} ${p.label}">${on?"своб":""}</button></td>`; }).join("")+"</tr>"; });
+  $("winGrid").innerHTML=g; updateHours();
   $("rateChips").innerHTML = RATES.map(r=>`<button class="chip${draft.rate===r.v?" on":""}" data-rate="${r.v}">${r.t}</button>`).join("");
   $("sphereChips").innerHTML = SPHERES.map(s=>`<button class="chip${draft.spheres.includes(s)?" on":""}" data-sphere="${esc(s)}">${esc(s)}</button>`).join("");
-  $("hasExp").checked = !!draft.exp;
+  $("hasExp").checked=!!draft.exp;
   $("stName").value = draft.name || (tgUser ? (tgUser.first_name||"") : "");
   $("stContact").value = draft.contact || (tgUser && tgUser.username ? "@"+tgUser.username : "");
   $("age18").checked = !!(profile && profile.age18);
   $("stConsent").checked = !!(profile && profile.consent);
 }
-function updateHours(){ $("hoursFree").textContent = "Свободно " + freeHours(draft.windows) + " ч в неделю"; }
+function updateHours(){ $("hoursFree").textContent="Свободно "+freeHours(draft.windows)+" ч в неделю"; }
 function setWin(d,k,on){ const a=draft.windows[d]||[]; const i=a.indexOf(k); if(on&&i<0)a.push(k); if(!on&&i>-1)a.splice(i,1); draft.windows[d]=PERIODS.map(p=>p.k).filter(x=>a.includes(x)); }
-function preset(name){
-  if(name==="clear") draft.windows={};
-  if(name==="evenings") ["Пн","Вт","Ср","Чт","Пт"].forEach(d=>{ setWin(d,"вечер",true); setWin(d,"поздно",true); });
-  if(name==="weekend") ["Сб","Вс"].forEach(d=>PERIODS.forEach(p=>setWin(d,p.k,true)));
-  buildStudentForms();
-}
-function buildEmployerForms(){
-  $("eDistrict").innerHTML = DISTRICTS.map(d=>`<option>${esc(d)}</option>`).join("");
-  $("eDays").innerHTML = DAYS.map(d=>`<button class="chip${emp.days.includes(d)?" on":""}" data-eday="${d}">${d}</button>`).join("");
-  $("eUnis").innerHTML = UNIS.filter(u=>u!=="Другой вуз").map(u=>`<button class="chip${emp.unis.includes(u)?" on":""}" data-euni="${esc(u)}">${esc(u)}</button>`).join("");
-  document.querySelectorAll(".priceTxt").forEach(el=>el.textContent=money(CONFIG.PRICE));
+function preset(n){ if(n==="clear") draft.windows={}; if(n==="evenings") ["Пн","Вт","Ср","Чт","Пт"].forEach(d=>{ setWin(d,"вечер",true); setWin(d,"поздно",true); }); if(n==="weekend") ["Сб","Вс"].forEach(d=>PERIODS.forEach(p=>setWin(d,p.k,true))); buildStudentForms(); }
+function err(id,on){ $(id).style.display=on?"block":"none"; }
+function startStudent(){ if(profile){ show("feed"); return; } draft=blank(); buildStudentForms(); show("st1"); }
+function st1next(){ const ok=draft.uni&&draft.district&&$("age18").checked; err("st1err",!ok); if(ok){ draft.age18=true; show("st2"); } }
+function st2next(){ const ok=freeHours(draft.windows)>0; err("st2err",!ok); if(ok) show("st3"); }
+async function st3save(){
+  draft.exp=$("hasExp").checked; draft.name=$("stName").value.trim(); draft.contact=$("stContact").value.trim();
+  const ok=draft.name&&draft.contact&&$("stConsent").checked; err("st3err",!ok); if(!ok) return;
+  draft.consent=true; draft.age18=true;
+  const btn=$("st3btn"); btn.disabled=true;
+  try{
+    await api("saveStudent",{name:draft.name,contact:draft.contact,uni:draft.uni,district:draft.district,windows:windowsText(draft.windows),hours:freeHours(draft.windows),rate:draft.rate,spheres:draft.spheres.join(", "),exp:draft.exp,age18:true,consent:true,source:SOURCE});
+    profile=JSON.parse(JSON.stringify(draft)); store.set("profile",profile); haptic(true); askWrite(); filter="fit"; feedLoaded=false; show("feed");
+  }catch(e){ toast(errMsg(e)); }
+  btn.disabled=false;
 }
 
 /* ---------- лента ---------- */
 async function loadFeed(force){
+  if(!profile){ show("st1"); return; }
   renderFeedHead();
-  if(loaded && !force){ renderFeed(); return; }
-  $("feedList").innerHTML = '<div class="loader"><i></i></div>';
+  if(feedLoaded && !force){ renderFeed(); return; }
+  loader("feedList");
   try{
-    if(DEMO) vacancies = DEMO_VACANCIES;
-    else { const j = await apiGet({action:"vacancies"}); vacancies = j.vacancies || []; }
-    loaded = true; renderFeed();
-  }catch(e){
-    $("feedList").innerHTML = `<div class="empty"><span class="ic">wifi_off</span><b>Не получилось загрузить вакансии</b>Проверь интернет и нажми «обновить» сверху.</div>`;
-  }
+    const [v,a] = await Promise.all([api("vacancies"), api("myApplications")]);
+    vacancies=v.vacancies||[]; myApps=a.applications||[]; feedLoaded=true; renderFeed(); markDot();
+  }catch(e){ $("feedList").innerHTML=emptyBox("wifi_off","Не получилось загрузить",errMsg(e)); }
 }
+function applied(id){ return myApps.some(a=>String(a.vacancyId)===String(id)); }
+function markDot(){ const hot=myApps.some(a=>a.status==="собеседование"); document.querySelectorAll("[data-dot]").forEach(d=>d.hidden=!hot); }
 function renderFeedHead(){
-  if(!profile) return;
-  $("helloName").textContent = profile.name ? "Привет, " + profile.name + "!" : "Подборка";
-  $("feedSum").textContent = [profile.uni, profile.district + " р-н", "свободно " + freeHours(profile.windows) + " ч/нед"].filter(Boolean).join(" · ");
+  $("helloName").innerHTML = profile.name ? "Привет, <em class='s'>"+esc(profile.name)+"</em>" : "Подборка";
+  $("feedSum").textContent=[profile.uni, profile.district+" р-н", "свободно "+freeHours(profile.windows)+" ч/нед"].filter(Boolean).join(" · ");
   const F=[["fit","Под мои окна"],["near","Рядом"],["noexp","Без опыта"],["all","Все вакансии"]];
-  $("filterChips").innerHTML = F.map(([k,t])=>`<button class="chip${filter===k?" on":""}" data-filter="${k}">${t}</button>`).join("");
+  $("filterChips").innerHTML=F.map(([k,t])=>`<button class="chip${filter===k?" on":""}" data-filter="${k}">${t}</button>`).join("");
 }
 function renderFeed(){
-  const w = profile ? profile.windows : {};
-  let list = vacancies.map(v=>Object.assign({}, v, {_fit:fit(v,w), _near:near(v)}));
-  if(filter==="fit") list = list.filter(v=>v._fit.ok>0);
-  if(filter==="near") list = list.filter(v=>v._near);
-  if(filter==="noexp") list = list.filter(v=>yes(v.noExp));
-  const minRate = profile ? profile.rate : 0;
-  list.sort((a,b)=> (b._fit.ok/(b._fit.total||1)) - (a._fit.ok/(a._fit.total||1)) || (b._near-a._near) || ((Number(b.pay)>=minRate)-(Number(a.pay)>=minRate)) || (Number(b.pay)-Number(a.pay)));
+  let list=vacancies.map(v=>Object.assign({},v,{_fit:fit(v,profile.windows),_near:near(v)}));
+  if(filter==="fit") list=list.filter(v=>v._fit.ok>0);
+  if(filter==="near") list=list.filter(v=>v._near);
+  if(filter==="noexp") list=list.filter(v=>yes(v.noExp));
+  const minRate=profile.rate||0;
+  list.sort((a,b)=>(b._fit.ok/(b._fit.total||1))-(a._fit.ok/(a._fit.total||1))||(b._near-a._near)||((Number(b.pay)>=minRate)-(Number(a.pay)>=minRate))||(Number(b.pay)-Number(a.pay)));
   if(!list.length){
-    const msg = vacancies.length
-      ? "Под выбранный фильтр сейчас ничего нет. Попробуй «Все вакансии» или добавь свободные окна в профиле."
-      : "Мы только собираем первые вакансии и проверяем каждую вручную. Как только появится смена под твои окна — напишем тебе.";
-    $("feedList").innerHTML = `<div class="empty"><span class="ic">search</span><b>Пока пусто</b>${msg}<div style="margin-top:14px"><button class="btn ghost sm" data-filter="all" style="margin:0 auto">Показать все</button></div></div>`;
-    return;
+    const msg=vacancies.length?"Под этот фильтр сейчас ничего нет. Попробуй «Все вакансии» или добавь свободные окна в профиле.":"Мы проверяем первые вакансии вручную. Как только появится смена под твои окна — она появится здесь.";
+    $("feedList").innerHTML=`<div class="empty"><span class="ic">search</span><b>Пока пусто</b>${msg}<div style="margin-top:14px"><button class="btn ghost sm" data-filter="all" style="margin:0 auto">Показать все</button></div></div>`; return;
   }
-  $("feedList").innerHTML = list.map(v=>card(v)).join("") + `<p class="hint" style="padding:0 24px">Вакансии проверяет команда StudentJob. Нашёл ошибку или подозрительное условие — напиши нам из профиля.</p>`;
+  $("feedList").innerHTML=list.map(card).join("")+`<p class="hint" style="padding:0 24px">Нашёл ошибку или подозрительное условие — напиши нам из профиля.</p>`;
 }
 function fitBadge(f){
-  if(!f.total) return "";
+  if(!f||!f.total) return "";
   if(f.ok===f.total) return `<span class="badge g"><span class="ic">bolt</span>Подходит под окна</span>`;
   if(f.ok>0) return `<span class="badge a"><span class="ic">schedule</span>Подходит ${f.ok} из ${f.total} дн.</span>`;
   return `<span class="badge r"><span class="ic">event_busy</span>Пересекается с парами</span>`;
 }
 function card(v){
-  const f=v._fit||fit(v,profile?profile.windows:{});
   return `<div class="vac" data-vac="${esc(v.id)}">
-    <div class="badges">${fitBadge(f)}<span class="badge b"><span class="ic">verified</span>Проверено</span>${yes(v.noExp)?'<span class="badge">Без опыта</span>':""}${v._near?'<span class="badge">Рядом</span>':""}</div>
-    <h3>${esc(v.position)}</h3><div class="co">${esc(v.company)} · ${esc(v.type||"")}</div>
+    <div class="badges">${fitBadge(v._fit)}<span class="badge b"><span class="ic">verified</span>Проверено</span>${yes(v.noExp)?'<span class="badge">Без опыта</span>':""}${v._near?'<span class="badge">Рядом</span>':""}${applied(v.id)?'<span class="badge g"><span class="ic">done</span>Ты откликнулся</span>':""}</div>
+    <h3>${esc(v.position)}</h3><div class="co">${esc(v.company)}${v.type?" · "+esc(v.type):""}</div>
     <div class="meta"><span class="ic">place</span><span>${esc(v.address||"")}${v.district?" · "+esc(v.district)+" р-н":""}</span></div>
     <div class="meta"><span class="ic">schedule</span><span>${esc(prettyDays(v.days))} · ${esc(hhmm(v.from))}–${esc(hhmm(v.to))}</span></div>
     <div class="pay"><b>${money(v.pay)} / час</b><span>${esc(v.payout||"")}</span></div>
   </div>`;
 }
 function openVacancy(id){
-  const v = vacancies.find(x=>String(x.id)===String(id)); if(!v) return;
-  current = v; const f = fit(v, profile?profile.windows:{});
-  const vd=parseDays(v.days);
-  $("vacBody").innerHTML = `
+  const v=vacancies.find(x=>String(x.id)===String(id)); if(!v) return;
+  current=v; const f=fit(v,profile.windows), vd=parseDays(v.days);
+  $("vacBody").innerHTML=`
     <div class="badges">${fitBadge(f)}<span class="badge b"><span class="ic">verified</span>Проверено StudentJob</span>${yes(v.noExp)?'<span class="badge">Без опыта</span>':""}</div>
-    <h1>${esc(v.position)}</h1><p class="lead" style="margin-bottom:12px">${esc(v.company)} · ${esc(v.type||"")}</p>
+    <h1>${esc(v.position)}</h1><p class="lead" style="margin-bottom:12px">${esc(v.company)}${v.type?" · "+esc(v.type):""}</p>
     <div class="card">
       <div class="kv"><span class="ic">payments</span><div><b>${money(v.pay)} / час</b><small>Выплата: ${esc(v.payout||"уточняется")}</small></div></div>
-      <div class="kv"><span class="ic">schedule</span><div><b>${esc(prettyDays(v.days))} · ${esc(hhmm(v.from))}–${esc(hhmm(v.to))}</b><small>Совпадение с твоими окнами по дням:</small>
+      <div class="kv"><span class="ic">schedule</span><div><b>${esc(prettyDays(v.days))} · ${esc(hhmm(v.from))}–${esc(hhmm(v.to))}</b><small>Совпадение с твоими окнами:</small>
         <div class="daysfit">${DAYS.map(d=>`<div class="${vd.includes(d)?(f.byDay[d]?"ok":"no"):""}">${d}</div>`).join("")}</div></div></div>
       <div class="kv"><span class="ic">place</span><div><b>${esc(v.address||"")}</b><small>${esc(v.district?v.district+" р-н":"")}${v.nearUnis?" · рядом: "+esc(v.nearUnis):""}</small></div></div>
     </div>
     ${v.duties?`<div class="label">Что делать</div><div class="card"><ul class="dots">${String(v.duties).split(/\n|;|•/).map(s=>s.trim()).filter(Boolean).map(s=>`<li>${esc(s)}</li>`).join("")}</ul></div>`:""}
     ${v.requirements?`<div class="label">Требования</div><div class="card">${esc(v.requirements)}</div>`:""}
-    <div class="note green"><span class="ic">shield</span><span>Работодатель проверен командой. Честный работодатель никогда не просит у студента деньги за обучение, форму или оформление.</span></div>`;
-  track("vacancy_view", v.id);
-  show("vac");
+    <div class="note green"><span class="ic">shield</span><span>Честный работодатель никогда не просит у студента деньги за обучение, форму или оформление.</span></div>`;
+  const done=applied(v.id); $("vacBtn").disabled=done; $("vacBtn").innerHTML=done?'Ты уже откликнулся <span class="ic">done</span>':'Откликнуться <span class="ic">send</span>';
+  track("vacancy_view",v.id); show("vac");
 }
-
-/* ---------- отклик ---------- */
 function toApply(){
-  if(!current) return;
-  $("applyTo").textContent = current.position + " — " + current.company;
-  $("applyCard").innerHTML = `
+  if(!current||applied(current.id)) return;
+  $("applyTo").textContent=current.position+" — "+current.company;
+  $("applyCard").innerHTML=`
     <div class="kv"><span class="ic">person</span><div><b>${esc(profile.name)}</b><small>${esc(profile.uni)}${profile.exp?" · есть опыт":" · без опыта"}</small></div></div>
     <div class="kv"><span class="ic">event_available</span><div><b>Свободные окна</b><small>${esc(windowsText(profile.windows))}</small></div></div>
     <div class="kv"><span class="ic">chat</span><div><b>${esc(profile.contact)}</b><small>Контакт увидит только этот работодатель</small></div></div>`;
@@ -702,115 +848,257 @@ function toApply(){
 async function sendApply(){
   const btn=$("applyBtn"); btn.disabled=true; btn.textContent="Отправляем…";
   try{
-    if(!DEMO) await apiPost("apply", Object.assign(baseUser(), {vacancyId:current.id, name:profile.name, contact:profile.contact, uni:profile.uni, windows:windowsText(profile.windows)}));
-    const mine = store.get("applied")||[]; mine.push({id:current.id, position:current.position, company:current.company, date:new Date().toLocaleDateString("ru-RU"), status:"новый"}); store.set("applied", mine);
-    haptic("ok");
-    $("appliedText").textContent = DEMO ? "Демо-режим: отклик не отправлен. В рабочей версии команда передаст анкету работодателю в течение 24 часов." : "Команда StudentJob передаст анкету работодателю «"+current.company+"» в течение 24 часов и напишет тебе.";
+    const r=await api("apply",{vacancyId:current.id,name:profile.name,contact:profile.contact,uni:profile.uni,windows:windowsText(profile.windows),exp:profile.exp,source:SOURCE});
+    if(r.duplicate) toast("Ты уже откликался на эту вакансию");
+    myApps.push({vacancyId:current.id,position:current.position,company:current.company,status:"новый",date:new Date().toISOString().slice(0,10)});
+    haptic(true); askWrite();
+    $("appliedText").textContent="Работодатель «"+current.company+"» уже видит твою анкету. Когда он ответит, статус изменится в «Моих откликах», а бот пришлёт сообщение.";
     show("applied");
-  }catch(e){ toast("Не получилось отправить. Проверь интернет и попробуй ещё раз"); }
+  }catch(e){ toast(errMsg(e)); }
   btn.disabled=false; btn.textContent="Отправить отклик";
 }
 async function loadApps(){
-  $("appsList").innerHTML = '<div class="loader"><i></i></div>';
-  let list = [];
-  try{
-    if(DEMO) list = store.get("applied")||[];
-    else { const j = await apiGet({action:"my", tg:USER_ID}); list = j.applications||[]; }
-  }catch(e){ list = store.get("applied")||[]; toast("Показаны сохранённые на телефоне отклики"); }
-  if(!list.length){ $("appsList").innerHTML = `<div class="empty"><span class="ic">send</span><b>Откликов пока нет</b>Открой подборку и откликнись на подходящую смену.</div>`; return; }
-  const color = s => /собесед|вышел|принят/i.test(s)?"g":/отказ|закрыт/i.test(s)?"r":/передан/i.test(s)?"b":"a";
-  $("appsList").innerHTML = list.slice().reverse().map(a=>`<div class="app-item"><div class="badges"><span class="badge ${color(a.status||"")}">${esc(a.status||"новый")}</span><span class="badge">${esc(a.date||"")}</span></div><h4>${esc(a.position)}</h4><div class="co">${esc(a.company)}</div></div>`).join("");
+  loader("appsList");
+  try{ myApps=(await api("myApplications")).applications||[]; markDot(); }
+  catch(e){ $("appsList").innerHTML=emptyBox("wifi_off","Не получилось загрузить",errMsg(e)); return; }
+  if(!myApps.length){ $("appsList").innerHTML=emptyBox("send","Откликов пока нет","Открой подборку и откликнись на подходящую смену."); return; }
+  $("appsList").innerHTML=myApps.slice().reverse().map(a=>{
+    const s=ST_STUDENT[a.status]||ST_STUDENT["новый"]; let extra="";
+    if(a.interview && (a.status==="собеседование"||a.status==="вышел на работу")){
+      const e=a.employer||{};
+      extra=`<div class="invite">
+        ${a.status==="собеседование"?`<div class="kv"><span class="ic">event</span><div><b>${esc(fmtDate(a.interview.date))}, ${esc(a.interview.time)}</b><small>Собеседование</small></div></div>
+        <div class="kv"><span class="ic">place</span><div><b>${esc(a.interview.place)}</b><small>Место встречи</small></div></div>`:""}
+        ${a.interview.message?`<div class="kv"><span class="ic">chat</span><div><small>Сообщение работодателя</small>${esc(a.interview.message)}</div></div>`:""}
+        <div class="kv"><span class="ic">call</span><div><b>${esc(e.person||"Работодатель")}</b><small>${[e.phone?contactHtml(e.phone):"", e.telegram?contactHtml(e.telegram):""].filter(Boolean).join(" · ")}</small></div></div>
+      </div>`;
+    }
+    return `<div class="app-item"><div class="badges"><span class="badge ${s.c}">${esc(s.t)}</span><span class="badge">${esc(fmtDate(a.date))}</span></div>
+      <h4>${esc(a.position)}</h4><div class="co">${esc(a.company)}${a.pay?" · "+money(a.pay)+"/ч":""}</div><p class="hint" style="text-align:left;margin:0">${esc(s.h)}</p>${extra}</div>`;
+  }).join("");
 }
 
 /* ---------- профиль ---------- */
 function renderProfile(){
   if(!profile){ show("st1"); return; }
-  $("profCard").innerHTML = `
+  $("profCard").innerHTML=`
     <div class="kv"><span class="ic">person</span><div><b>${esc(profile.name)}</b><small>${esc(profile.contact)}</small></div></div>
     <div class="kv"><span class="ic">account_balance</span><div><b>${esc(profile.uni)}</b><small>${esc(profile.district)} р-н</small></div></div>
     <div class="kv"><span class="ic">event_available</span><div><b>Свободно ${freeHours(profile.windows)} ч в неделю</b><small>${esc(windowsText(profile.windows))}</small></div></div>
-    <div class="kv"><span class="ic">payments</span><div><b>${profile.rate?"от "+money(profile.rate)+"/ч":"Ставка не важна"}</b><small>${esc(profile.spheres.join(", ")||"Сферы не выбраны")}</small></div></div>`;
+    <div class="kv"><span class="ic">payments</span><div><b>${profile.rate?"от "+money(profile.rate)+"/ч":"Ставка не важна"}</b><small>${esc((profile.spheres||[]).join(", ")||"Сферы не выбраны")}</small></div></div>`;
+  $("myId").textContent = me.id ? "Твой Telegram ID: "+me.id : "";
 }
-async function deleteMe(){
-  const go = async ()=>{
-    try{ if(!DEMO) await apiPost("delete", Object.assign(baseUser(), {contact: profile?profile.contact:""})); }catch(e){ toast("Не получилось отправить запрос, напиши команде"); return; }
-    ["profile","applied"].forEach(store.del); profile=null; loaded=false;
-    Object.assign(draft,{uni:"",district:"",windows:{},rate:0,spheres:[],exp:false,name:"",contact:""});
-    toast("Запрос принят. Удалим данные из таблицы в течение 3 дней"); show("role");
+function deleteMe(){
+  const go=async()=>{
+    try{ await api("deleteMe",{contact:profile?profile.contact:""}); }catch(e){ toast(errMsg(e)); return; }
+    store.del("profile"); profile=null; feedLoaded=false; draft=blank();
+    toast("Запрос принят. Удалим данные в течение 3 дней"); show("role");
   };
-  const q="Удалить анкету и отклики? Команда удалит данные из таблицы в течение 3 дней.";
+  const q="Удалить анкету и отклики? Команда удалит данные из базы в течение 3 дней.";
   if(inTg && tg.showConfirm){ try{ tg.showConfirm(q, ok=>{ if(ok) go(); }); return; }catch(e){} }
   if(window.confirm(q)) go();
 }
-function support(){
-  const url="https://t.me/"+CONFIG.SUPPORT_TG;
-  if(inTg){ try{ tg.openTelegramLink(url); return; }catch(e){} }
-  window.open(url,"_blank");
-}
 
-/* ---------- валидация студента ---------- */
-function err(id,on){ $(id).style.display = on?"block":"none"; }
-function st1next(){ const ok = draft.uni && draft.district && $("age18").checked; err("st1err",!ok); if(ok){ draft.age18=true; show("st2"); } }
-function st2next(){ const ok = freeHours(draft.windows)>0; err("st2err",!ok); if(ok) show("st3"); }
-async function st3save(){
-  draft.exp=$("hasExp").checked; draft.name=$("stName").value.trim(); draft.contact=$("stContact").value.trim();
-  const ok = draft.name && draft.contact && $("stConsent").checked; err("st3err",!ok); if(!ok) return;
-  draft.consent=true; draft.age18=true;
-  const btn=$("st3btn"); btn.disabled=true;
-  try{
-    if(!DEMO) await apiPost("student", Object.assign(baseUser(), {name:draft.name, contact:draft.contact, uni:draft.uni, district:draft.district, windows:windowsText(draft.windows), hours:freeHours(draft.windows), rate:draft.rate, spheres:draft.spheres.join(", "), exp:draft.exp, age18:true, consent:true}));
-    profile = JSON.parse(JSON.stringify(draft)); store.set("profile", profile); haptic("ok"); filter="fit"; show("feed");
-  }catch(e){ toast("Не получилось сохранить анкету. Проверь интернет и попробуй ещё раз"); }
-  btn.disabled=false;
+/* ---------- работодатель: форма ---------- */
+function buildEmployerForms(){
+  $("eDistrict").innerHTML=DISTRICTS.map(d=>`<option>${esc(d)}</option>`).join("");
+  $("eDays").innerHTML=DAYS.map(d=>`<button class="chip${emp.days.includes(d)?" on":""}" data-eday="${d}">${d}</button>`).join("");
+  $("eUnis").innerHTML=UNIS.filter(u=>u!=="Другой вуз").map(u=>`<button class="chip${emp.unis.includes(u)?" on":""}" data-euni="${esc(u)}">${esc(u)}</button>`).join("");
+  document.querySelectorAll(".priceTxt").forEach(el=>el.textContent=money(CONFIG.PRICE));
+  document.querySelectorAll(".guarTxt").forEach(el=>el.textContent=CONFIG.GUARANTEE);
 }
-
-/* ---------- работодатель ---------- */
 function val(id){ return $(id).value.trim(); }
 function mark(id,bad){ $(id).classList.toggle("err",!!bad); return !bad; }
+function newVacancy(){
+  ["ePosition","eDuties","eReq","ePay"].forEach(id=>$(id).value=""); $("eRules").checked=false;
+  if(empVacs.length){ const l=empVacs[0]; [["eCompany",l.company],["eBin",l.bin],["eAddress",l.address],["eContact",l.contact],["ePhone",l.phone],["eTg",l.telegram]].forEach(([id,v])=>{ if(!$(id).value) $(id).value=v||""; }); if(l.district) $("eDistrict").value=l.district; }
+  show("emp1");
+}
 function e1next(){
   let ok=true;
-  ok = mark("eCompany",!val("eCompany")) && ok;
-  ok = mark("eBin",!/^\d{12}$/.test(val("eBin"))) && ok;
-  ok = mark("eAddress",!val("eAddress")) && ok;
-  ok = mark("eContact",!val("eContact")) && ok;
-  ok = mark("ePhone",val("ePhone").replace(/\D/g,"").length<10) && ok;
+  ok=mark("eCompany",!val("eCompany"))&&ok; ok=mark("eBin",!/^\d{12}$/.test(val("eBin")))&&ok; ok=mark("eAddress",!val("eAddress"))&&ok;
+  ok=mark("eContact",!val("eContact"))&&ok; ok=mark("ePhone",val("ePhone").replace(/\D/g,"").length<10)&&ok;
   err("e1err",!ok); if(ok) show("emp2");
 }
 function e2next(){
-  let ok=true;
-  ok = mark("ePosition",!val("ePosition")) && ok;
-  const f=hours(val("eFrom")), t=hours(val("eTo"));
-  ok = mark("eFrom",f==null) && ok; ok = mark("eTo",t==null||t<=f) && ok;
-  ok = mark("ePay",!(Number(val("ePay"))>=500)) && ok;
-  ok = mark("eDuties",!val("eDuties")) && ok;
-  if(!emp.days.length) ok=false;
+  let ok=true; const f=hours(val("eFrom")), t=hours(val("eTo"));
+  ok=mark("ePosition",!val("ePosition"))&&ok; ok=mark("eFrom",f==null)&&ok; ok=mark("eTo",t==null||t<=f)&&ok;
+  ok=mark("ePay",!(Number(val("ePay"))>=500))&&ok; ok=mark("eDuties",!val("eDuties"))&&ok; if(!emp.days.length) ok=false;
   err("e2err",!ok); if(ok) show("emp3");
 }
 function empVacancy(){
-  return {company:val("eCompany"), type:$("eType").value, district:$("eDistrict").value, address:val("eAddress"), position:val("ePosition"),
-    days:DAYS.filter(d=>emp.days.includes(d)).join(","), from:val("eFrom"), to:val("eTo"), pay:val("ePay"), payout:$("ePayout").value,
-    noExp:$("eNoExp").checked?"да":"нет", duties:val("eDuties"), requirements:val("eReq"), nearUnis:emp.unis.join(", "), id:"preview"};
+  return {company:val("eCompany"),type:$("eType").value,district:$("eDistrict").value,address:val("eAddress"),position:val("ePosition"),
+    days:DAYS.filter(d=>emp.days.includes(d)).join(","),from:val("eFrom"),to:val("eTo"),pay:val("ePay"),payout:$("ePayout").value,
+    noExp:$("eNoExp").checked?"да":"нет",duties:val("eDuties"),requirements:val("eReq"),nearUnis:emp.unis.join(", ")};
 }
-function renderPreview(){ const v=empVacancy(); v._fit={ok:0,total:0,byDay:{}}; $("ePreview").innerHTML = card(v); }
+function renderPreview(){ const v=empVacancy(); v.id="preview"; $("ePreview").innerHTML=card(v); }
 async function sendVacancy(){
   const ok=$("eRules").checked; err("e3err",!ok); if(!ok) return;
   const btn=$("e3btn"); btn.disabled=true; btn.textContent="Отправляем…";
   try{
-    const v=empVacancy(); delete v.id;
-    if(!DEMO) await apiPost("vacancy", Object.assign(baseUser(), v, {bin:val("eBin"), contact:val("eContact"), phone:val("ePhone"), telegram:val("eTg"), tariff:emp.tariff}));
-    haptic("ok");
-    $("empDoneText").textContent = (DEMO?"Демо-режим: заявка не отправлена. ":"") + (emp.tariff==="Стандарт"
-      ? "После проверки пришлём счёт Kaspi на "+money(CONFIG.PRICE)+". Если за 7 дней будет меньше 3 подходящих кандидатов — вернём деньги."
-      : "Пилотное размещение бесплатное. Проверим компанию и опубликуем вакансию.");
+    await api("createVacancy",Object.assign(empVacancy(),{bin:val("eBin"),contact:val("eContact"),phone:val("ePhone"),telegram:val("eTg"),tariff:emp.tariff,source:SOURCE}));
+    me.vacancies=(me.vacancies||0)+1; haptic(true); askWrite();
+    $("empDoneText").textContent=emp.tariff==="Стандарт"
+      ? "Тариф «Стандарт» — "+money(CONFIG.PRICE)+". Реквизиты для оплаты появятся в кабинете после проверки. Если за 7 дней будет меньше "+CONFIG.GUARANTEE+" подходящих кандидатов — вернём деньги."
+      : "Пилотное размещение бесплатное. Мы проверим компанию и опубликуем вакансию.";
     show("empDone");
-  }catch(e){ toast("Не получилось отправить. Проверьте интернет и попробуйте ещё раз"); }
+  }catch(e){ toast(errMsg(e)); }
   btn.disabled=false; btn.textContent="Отправить на проверку";
 }
 
-/* ---------- обработчик кликов ---------- */
-document.addEventListener("click", e=>{
-  const t = e.target.closest("button,[data-vac]"); if(!t) return;
-  const d = t.dataset;
+/* ---------- работодатель: кабинет ---------- */
+async function loadEmp(){
+  loader("empList");
+  try{ empVacs=(await api("myVacancies")).vacancies||[]; }catch(e){ $("empList").innerHTML=emptyBox("wifi_off","Не получилось загрузить",errMsg(e)); return; }
+  if(!empVacs.length){ $("empList").innerHTML=emptyBox("work","Вакансий пока нет","Разместите первую — это займёт 3 минуты."); return; }
+  $("empList").innerHTML=empVacs.map(v=>`
+    <div class="vac" data-empvac="${esc(v.id)}">
+      <div class="badges">${badge(ST_VAC,v.status)}${v.tariff==="Стандарт"&&ST_PAY[v.payment]?badge(ST_PAY,v.payment):""}${v.counts.fresh?`<span class="badge g">+${v.counts.fresh} новых</span>`:""}</div>
+      <h3>${esc(v.position)}</h3><div class="co">${esc(v.company)} · ${esc(prettyDays(v.days))} ${esc(hhmm(v.from))}–${esc(hhmm(v.to))}</div>
+      <div class="counts"><div><b>${v.counts.total}</b><small>откликов</small></div><div><b>${v.counts.interview}</b><small>собеседований</small></div><div><b>${v.counts.hired}</b><small>нанято</small></div></div>
+    </div>`).join("");
+}
+async function openEmpVac(id, silent){
+  curVac=empVacs.find(v=>String(v.id)===String(id)); if(!curVac) return;
+  if(!silent) show("empVac");
+  const v=curVac, s=v.status;
+  const step=(cls,t,sm)=>`<div class="sv ${cls}"><i></i><div><b>${t}</b><small>${sm}</small></div></div>`;
+  let timeline;
+  if(s==="отклонена") timeline=step("done","Заявка отправлена",esc(v.created))+step("bad","Не прошла проверку",esc(v.note||"Команда свяжется с вами и объяснит причину"));
+  else timeline=step("done","Заявка отправлена",esc(v.created))
+    +step(s==="на проверке"?"now":"done","Проверка командой",s==="на проверке"?"Позвоним в течение 24 часов":"Компания проверена")
+    +step(s==="опубликована"?"now":s==="закрыта"?"done":"","Публикация",s==="опубликована"?"Студенты видят вакансию":s==="закрыта"?"Вакансия закрыта":"После проверки");
+  let pay="";
+  if(v.tariff==="Стандарт" && v.payment!=="оплачено" && v.payment!=="не требуется"){
+    pay=`<div class="card paycard"><div class="kv"><span class="ic">payments</span><div><b>К оплате: ${money(CONFIG.PRICE)}</b><small>${esc(CONFIG.KASPI||"Реквизиты Kaspi команда пришлёт в Telegram после проверки")}</small></div></div>
+      <p class="hint" style="text-align:left;margin:4px 0 10px">Гарантия: меньше ${CONFIG.GUARANTEE} подходящих кандидатов за 7 дней — вернём деньги.</p>
+      ${v.payment==="оплата заявлена"?`<span class="badge b">Проверяем поступление оплаты</span>`:s==="на проверке"?`<span class="badge a">Оплата — после проверки вакансии</span>`:`<button class="btn sm" data-act="markPaid">Я оплатил(а)</button>`}</div>`;
+  } else if(v.payment==="оплачено") pay=`<div class="note green"><span class="ic">verified</span><span>Оплата ${money(CONFIG.PRICE)} получена. Гарантия ${CONFIG.GUARANTEE} кандидатов действует 7 дней.</span></div>`;
+  $("empVacBody").innerHTML=`<div class="badges">${badge(ST_VAC,s)}<span class="badge">${esc(v.tariff||"Пилот")}</span></div>
+    <h1>${esc(v.position)}</h1><p class="lead" style="margin-bottom:12px">${esc(v.company)} · ${esc(prettyDays(v.days))} ${esc(hhmm(v.from))}–${esc(hhmm(v.to))} · ${money(v.pay)}/ч</p>
+    <div class="steps-v">${timeline}</div>${pay}<div class="label">Кандидаты</div>`;
+  $("empVacFoot").innerHTML = s==="опубликована" ? `<button class="btn ghost" data-act="closeVac"><span class="ic">block</span>Закрыть вакансию</button>` : "";
+  loader("candList"); $("candTabs").innerHTML="";
+  try{ applicants=(await api("applicants",{vacancyId:v.id})).applicants||[]; }catch(e){ $("candList").innerHTML=emptyBox("wifi_off","Не получилось загрузить",errMsg(e)); return; }
+  renderCands();
+}
+const CAND_TABS=[["new","Новые",a=>a.status==="новый"||a.status==="просмотрен"],["int","Собеседование",a=>a.status==="собеседование"],["hired","Наняты",a=>a.status==="вышел на работу"],["no","Отказ",a=>a.status==="отказ"]];
+function renderCands(){
+  $("candTabs").innerHTML=CAND_TABS.map(([k,t,f])=>`<button class="${candTab===k?"on":""}" data-ctab="${k}">${t} ${applicants.filter(f).length||""}</button>`).join("");
+  const f=CAND_TABS.find(x=>x[0]===candTab)[2]; const list=applicants.filter(f);
+  if(!applicants.length){ $("candList").innerHTML=emptyBox("group", curVac.status==="опубликована"?"Откликов пока нет":"Отклики появятся после публикации", curVac.status==="опубликована"?"Студентам с подходящими окнами вакансия уже видна. Бот напишет, когда кто-то откликнется.":"Сначала команда проверит вакансию."); return; }
+  if(!list.length){ $("candList").innerHTML=emptyBox("person_search","Здесь пусто","Кандидаты появятся тут, когда вы смените им статус."); return; }
+  const w=curVac;
+  $("candList").innerHTML=list.map(a=>{ const fw=fit(w,parseWindows(a.windows));
+    return `<div class="app-item cand" data-cand="${esc(a.id)}"><div class="badges">${badge(ST_EMP,a.status)}${fitBadge(fw)}</div>
+      <h4>${esc(a.name)}</h4><div class="co">${esc(a.uni)} · ${a.exp?"есть опыт":"без опыта"} · ${esc(fmtDate(a.date))}</div>
+      ${a.status==="собеседование"?`<p class="hint" style="text-align:left;margin:0">Собеседование: ${esc(fmtDate(a.interview.date))}, ${esc(a.interview.time)}</p>`:""}</div>`; }).join("");
+}
+function openCand(id){
+  curCand=applicants.find(a=>String(a.id)===String(id)); if(!curCand) return;
+  const a=curCand, fw=fit(curVac,parseWindows(a.windows)), vd=parseDays(curVac.days);
+  if(a.status==="новый"){ a.status="просмотрен"; api("updateApplicant",{appId:a.id,status:"просмотрен"}).catch(()=>{}); }
+  $("candBody").innerHTML=`<div class="badges">${badge(ST_EMP,a.status)}${fitBadge(fw)}</div>
+    <h1>${esc(a.name)}</h1><p class="lead" style="margin-bottom:12px">${esc(a.uni)} · ${a.exp?"есть опыт работы":"без опыта"}</p>
+    <div class="card">
+      <div class="kv"><span class="ic">chat</span><div><b>${contactHtml(a.contact)}</b><small>Контакт кандидата${a.username&&a.username!==a.contact?" · Telegram "+contactHtml(a.username):""}</small></div></div>
+      <div class="kv"><span class="ic">event_available</span><div><b>Свободные окна</b><small>${esc(a.windows)}</small>
+        <div class="daysfit">${DAYS.map(d=>`<div class="${vd.includes(d)?(fw.byDay[d]?"ok":"no"):""}">${d}</div>`).join("")}</div><small style="margin-top:6px">Жёлтым — дни вашей смены, когда кандидат свободен</small></div></div>
+      <div class="kv"><span class="ic">schedule</span><div><b>${esc(fmtDate(a.date))}</b><small>Дата отклика</small></div></div>
+      ${a.status==="собеседование"?`<div class="kv"><span class="ic">event</span><div><b>${esc(fmtDate(a.interview.date))}, ${esc(a.interview.time)}</b><small>${esc(a.interview.place)}</small></div></div>`:""}
+    </div>`;
+  let act="";
+  if(a.status==="новый"||a.status==="просмотрен") act=`<button class="btn" data-act="toInvite">Пригласить на собеседование</button><button class="btn ghost" data-act="candReject" style="margin-top:8px">Отказать</button>`;
+  else if(a.status==="собеседование") act=`<button class="btn" data-act="candHire"><span class="ic">how_to_reg</span>Нанять</button><div class="row2" style="margin-top:8px"><button class="btn ghost" data-act="toInvite">Перенести</button><button class="btn ghost" data-act="candReject">Отказать</button></div>`;
+  else if(a.status==="вышел на работу") act=`<div class="note green" style="margin:0"><span class="ic">how_to_reg</span><span>Кандидат нанят. Договоритесь о первой смене по контакту выше.</span></div>`;
+  else act=`<button class="btn ghost" data-act="toInvite">Всё же пригласить</button>`;
+  $("candActions").innerHTML=act;
+  show("empCand");
+}
+function toInvite(){
+  const a=curCand; $("inviteWho").textContent=a.name+" · "+curVac.position;
+  const d=new Date(Date.now()+86400000); $("iDate").value=(a.interview&&a.interview.date)||d.toISOString().slice(0,10);
+  if(a.interview&&a.interview.time) $("iTime").value=a.interview.time;
+  $("iPlace").value=(a.interview&&a.interview.place)||curVac.address||"";
+  $("iMsg").value=(a.interview&&a.interview.message)||"Здравствуйте! Приглашаем на короткое знакомство (15 минут). Возьмите, пожалуйста, удостоверение.";
+  show("empInvite");
+}
+async function setCand(status, extra){
+  try{
+    await api("updateApplicant",Object.assign({appId:curCand.id,status},extra||{}));
+    curCand.status=status; if(extra) curCand.interview=Object.assign({},curCand.interview,extra);
+    haptic(true); return true;
+  }catch(e){ toast(errMsg(e)); return false; }
+}
+async function sendInvite(){
+  const date=$("iDate").value, time=$("iTime").value, place=val("iPlace"), message=val("iMsg");
+  const ok=date&&time&&place; err("iErr",!ok); if(!ok) return;
+  const btn=$("iBtn"); btn.disabled=true;
+  if(await setCand("собеседование",{date,time,place,message})){ toast("Приглашение отправлено"); candTab="int"; stack.pop(); stack.pop(); show("empVac",false); renderCands(); }
+  btn.disabled=false;
+}
+function confirmAsk(q,cb){ if(inTg&&tg.showConfirm){ try{ tg.showConfirm(q,ok=>{ if(ok) cb(); }); return; }catch(e){} } if(window.confirm(q)) cb(); }
+
+/* ---------- панель команды ---------- */
+async function loadAdm(){
+  loader("admBody"); renderAdmTabs();
+  try{ adm=await api("adminData"); }catch(e){ $("admBody").innerHTML=emptyBox("lock","Не получилось загрузить",errMsg(e)); return; }
+  renderAdmTabs(); renderAdm();
+}
+function renderAdmTabs(){
+  const n=k=>adm?(k==="pending"?adm.pending.length:k==="pay"?adm.payments.length:""):"";
+  $("admTabs").innerHTML=[["pending","Проверка"],["pay","Оплаты"],["stats","Сводка"],["all","Все"]].map(([k,t])=>`<button class="${admTab===k?"on":""}" data-atab="${k}">${t} ${n(k)||""}</button>`).join("");
+}
+function admCard(v){
+  return `<div class="vac" data-admvac="${esc(v.id)}"><div class="badges">${badge(ST_VAC,v.status)}<span class="badge">${esc(v.tariff)}</span>${v.tariff==="Стандарт"&&ST_PAY[v.payment]?badge(ST_PAY,v.payment):""}</div>
+    <h3>${esc(v.position)}</h3><div class="co">${esc(v.company)} · ${esc(v.created)}</div>
+    <div class="meta"><span class="ic">call</span><span>${esc(v.contact)} · ${esc(v.phone)}</span></div></div>`;
+}
+function renderAdm(){
+  if(!adm) return;
+  if(admTab==="pending") $("admBody").innerHTML=adm.pending.length?adm.pending.map(admCard).join(""):emptyBox("task_alt","Всё проверено","Новых заявок на проверку нет.");
+  if(admTab==="all") $("admBody").innerHTML=adm.all.length?adm.all.map(admCard).join(""):emptyBox("work","Вакансий пока нет","");
+  if(admTab==="pay") $("admBody").innerHTML=adm.payments.length?adm.payments.map(v=>`<div class="app-item"><div class="badges">${badge(ST_PAY,v.payment)}${badge(ST_VAC,v.status)}</div>
+      <h4>${esc(v.company)} — ${money(CONFIG.PRICE)}</h4><div class="co">${esc(v.position)} · ${esc(v.contact)} · ${contactHtml(v.phone)}</div>
+      <button class="btn sm" data-paid="${esc(v.id)}"><span class="ic">done</span>Оплата получена</button></div>`).join(""):emptyBox("payments","Ожидающих оплат нет","");
+  if(admTab==="stats"){ const s=adm.stats;
+    const tile=(n,t)=>`<div class="stat"><b>${n}</b><small>${t}</small></div>`;
+    $("admBody").innerHTML=`<div class="stats">${tile(s.opens,"открытий аппки")}${tile(s.students,"анкет студентов")}${tile(s.vacancies,"заявок от бизнеса")}${tile(s.published,"опубликовано")}${tile(s.apps,"откликов")}${tile(s.interview,"собеседований")}${tile(s.hired,"нанято")}${tile(s.paid,"оплат")}</div>
+      <div class="pad"><div class="card"><div class="kv"><span class="ic">savings</span><div><b>${money(s.revenue)}</b><small>Выручка (оплаченные размещения)</small></div></div></div>
+      <p class="hint">Подробная воронка с порогами — на листе «Метрики» в Google Таблице</p></div>`; }
+}
+function openAdmVac(id){
+  curAdm=(adm.all.concat(adm.pending)).find(v=>String(v.id)===String(id)); if(!curAdm) return; const v=curAdm;
+  const row=(i,b,s)=>`<div class="kv"><span class="ic">${i}</span><div><b>${b}</b><small>${s}</small></div></div>`;
+  $("admVacBody").innerHTML=`<div class="badges">${badge(ST_VAC,v.status)}<span class="badge">${esc(v.tariff)}</span>${ST_PAY[v.payment]?badge(ST_PAY,v.payment):""}</div>
+    <h1>${esc(v.position)}</h1><p class="lead">${esc(v.company)} · ${esc(v.type)}</p>
+    <div class="label">Проверить</div><div class="card">
+      ${row("badge",esc(v.bin||"—"),"БИН/ИИН — сверить по реестру")}
+      ${row("call",esc(v.contact)+" · "+contactHtml(v.phone),"Контактное лицо — позвонить")}
+      ${v.telegram?row("send",contactHtml(v.telegram),"Telegram"):""}
+      ${row("place",esc(v.address),esc(v.district)+" р-н — проверить в 2GIS")}</div>
+    <div class="label">Условия</div><div class="card">
+      ${row("schedule",esc(prettyDays(v.days))+" · "+esc(hhmm(v.from))+"–"+esc(hhmm(v.to)),"График")}
+      ${row("payments",money(v.pay)+"/ч","Выплата: "+esc(v.payout))}
+      ${row("checklist","Обязанности",esc(v.duties))}
+      ${v.requirements?row("assignment","Требования",esc(v.requirements)):""}</div>
+    <div class="field" style="margin-top:14px"><label>Заметка / причина отказа</label><textarea class="input" id="admNote" maxlength="300">${esc(v.note||"")}</textarea></div>
+    ${v.status!=="опубликована"?`<button class="btn" data-adm="опубликована"><span class="ic">check</span>Опубликовать</button>`:""}
+    ${v.status==="на проверке"?`<button class="btn ghost" data-adm="отклонена" style="margin-top:8px;color:var(--red)">Отклонить</button>`:""}
+    ${v.status==="опубликована"?`<button class="btn ghost" data-adm="закрыта" style="margin-top:8px">Закрыть вакансию</button>`:""}
+    ${v.tariff==="Стандарт"&&v.payment!=="оплачено"?`<button class="btn ghost" data-paid="${esc(v.id)}" style="margin-top:8px"><span class="ic">payments</span>Оплата получена</button>`:""}`;
+  show("admVac");
+}
+async function admSet(data, okText){
+  try{ await api("adminSetVacancy",data); toast(okText); haptic(true); return true; }catch(e){ toast(errMsg(e)); return false; }
+}
+
+/* ---------- клики ---------- */
+document.addEventListener("click", async e=>{
+  const a=e.target.closest("a[data-ext],a[href^='tel:']");
+  if(a && a.hasAttribute("data-ext")){ e.preventDefault(); openLink(a.href); return; }
+  const t=e.target.closest("button,[data-vac],[data-empvac],[data-cand],[data-admvac]"); if(!t) return;
+  const d=t.dataset;
   if(d.back!==undefined){ back(); return; }
   if(d.uni){ draft.uni=d.uni; buildStudentForms(); haptic(); return; }
   if(d.district){ draft.district=d.district; buildStudentForms(); haptic(); return; }
@@ -820,39 +1108,54 @@ document.addEventListener("click", e=>{
   if(d.sphere){ const i=draft.spheres.indexOf(d.sphere); i>-1?draft.spheres.splice(i,1):draft.spheres.push(d.sphere); t.classList.toggle("on"); return; }
   if(d.filter){ filter=d.filter; renderFeedHead(); renderFeed(); return; }
   if(d.vac){ if(d.vac!=="preview") openVacancy(d.vac); return; }
-  if(d.tab){ if(!profile){ show("st1"); return; } show(d.tab); return; }
+  if(d.empvac){ candTab="new"; openEmpVac(d.empvac); return; }
+  if(d.cand){ openCand(d.cand); return; }
+  if(d.ctab){ candTab=d.ctab; renderCands(); return; }
+  if(d.atab){ admTab=d.atab; renderAdmTabs(); renderAdm(); return; }
+  if(d.admvac){ openAdmVac(d.admvac); return; }
+  if(d.tab){ if(!profile){ startStudent(); return; } show(d.tab); return; }
   if(d.eday){ const i=emp.days.indexOf(d.eday); i>-1?emp.days.splice(i,1):emp.days.push(d.eday); t.classList.toggle("on"); return; }
   if(d.euni){ const i=emp.unis.indexOf(d.euni); i>-1?emp.unis.splice(i,1):emp.unis.push(d.euni); t.classList.toggle("on"); return; }
-  if(d.tariff){ emp.tariff=d.tariff; document.querySelectorAll("[data-tariff]").forEach(b=>b.classList.toggle("on",b===t)); track("tariff_select", d.tariff); return; }
-  if(d.go){ if(d.act==="newVacancy"){ ["eRules"].forEach(id=>$(id).checked=false); ["ePosition","eDuties","eReq","ePay"].forEach(id=>$(id).value=""); } show(d.go); return; }
+  if(d.tariff){ emp.tariff=d.tariff; document.querySelectorAll("[data-tariff]").forEach(b=>b.classList.toggle("on",b===t)); track("tariff_select",d.tariff); return; }
+  if(d.paid){ if(await admSet({vacancyId:d.paid,payment:"оплачено"},"Оплата отмечена")){ if(currentScreen==="admVac") back(); else loadAdm(); } return; }
+  if(d.adm){ const note=$("admNote")?$("admNote").value.trim():"";
+    if(d.adm==="отклонена"&&!note){ toast("Напишите причину отказа"); $("admNote").classList.add("err"); return; }
+    if(await admSet({vacancyId:curAdm.id,status:d.adm,note},d.adm==="опубликована"?"Вакансия опубликована":d.adm==="отклонена"?"Вакансия отклонена":"Вакансия закрыта")) back(); return; }
   switch(d.act){
-    case "student": track("role","student"); if(profile) show("feed"); else { buildStudentForms(); show("st1"); } break;
-    case "employer": track("role","employer"); show("emp0"); break;
+    case "student": track("role","student"); startStudent(); break;
+    case "employer": track("role","employer"); goEmployer(); break;
+    case "admin": show("admHome"); break;
+    case "toRole": show("role"); break;
+    case "retryBoot": boot(); break;
     case "st1next": st1next(); break;
     case "st2next": st2next(); break;
     case "st3save": st3save(); break;
-    case "reload": loaded=false; loadFeed(true); break;
+    case "reloadFeed": feedLoaded=false; loadFeed(true); break;
     case "reloadApps": loadApps(); break;
     case "toApply": toApply(); break;
     case "sendApply": sendApply(); break;
-    case "editProfile": buildStudentForms(); show("st1"); break;
+    case "editProfile": draft=JSON.parse(JSON.stringify(profile||blank())); buildStudentForms(); show("st1"); break;
     case "deleteMe": deleteMe(); break;
-    case "support": support(); break;
-    case "switchRole": show("emp0"); break;
+    case "support": openLink("https://t.me/"+CONFIG.SUPPORT_TG); break;
+    case "newVacancy": newVacancy(); break;
     case "e1next": e1next(); break;
     case "e2next": e2next(); break;
     case "sendVacancy": sendVacancy(); break;
+    case "empHome": show("empHome"); break;
+    case "reloadEmp": loadEmp(); break;
+    case "reloadEmpVac": { const r=await api("myVacancies").catch(()=>null); if(r){ empVacs=r.vacancies; openEmpVac(curVac.id,true); } break; }
+    case "markPaid": try{ await api("markPaid",{vacancyId:curVac.id}); curVac.payment="оплата заявлена"; toast("Спасибо! Проверим поступление и подтвердим"); openEmpVac(curVac.id,true); }catch(err2){ toast(errMsg(err2)); } break;
+    case "closeVac": confirmAsk("Закрыть вакансию? Студенты перестанут её видеть.", async()=>{ try{ await api("closeVacancy",{vacancyId:curVac.id}); curVac.status="закрыта"; toast("Вакансия закрыта"); openEmpVac(curVac.id,true); }catch(err2){ toast(errMsg(err2)); } }); break;
+    case "toInvite": toInvite(); break;
+    case "sendInvite": sendInvite(); break;
+    case "candHire": confirmAsk("Отметить "+curCand.name+" как нанятого?", async()=>{ if(await setCand("вышел на работу")){ toast("Кандидат нанят 🎉"); candTab="hired"; back(); renderCands(); } }); break;
+    case "candReject": confirmAsk("Отказать кандидату "+curCand.name+"? Он получит вежливое уведомление.", async()=>{ if(await setCand("отказ")){ toast("Отказ отправлен"); candTab="no"; back(); renderCands(); } }); break;
+    case "reloadAdm": loadAdm(); break;
   }
 });
 document.addEventListener("input", e=>{ if(e.target.classList.contains("input")) e.target.classList.remove("err"); });
 
-/* ---------- старт ---------- */
-$("demoBar").hidden = !DEMO;
-buildStudentForms(); buildEmployerForms();
-track("app_open", inTg ? "telegram" : "browser");
-if(/^emp/i.test(SOURCE)) { show("role"); show("emp0"); }
-else if(profile) show("feed");
-else show("role");
+boot();
 })();
 </script>
 </body>
