@@ -12,8 +12,12 @@
 <script>
 /* ===================== НАСТРОЙКИ ===================== */
 const LANDING = {
-  // Ссылка на мини-аппку из @BotFather (/newapp), вида https://t.me/имя_бота/app
-  TG_APP_LINK: "https://t.me/YOUR_BOT/app",
+  // Куда ведут кнопки: ваш бот
+  TG_APP_LINK: "https://t.me/studentjob_almaty_bot",
+  // Как передать метку кнопки:
+  //   "start"    — открывается чат с ботом (бот получает /start landing)
+  //   "startapp" — сразу открывается мини-аппка (нужен Main Mini App в @BotFather)
+  PARAM: "start",
   // Номер счётчика Яндекс Метрики (только цифры). Пусто — Метрика выключена.
   YM_ID: ""
 };
@@ -346,7 +350,7 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;
   document.querySelectorAll("a.tg").forEach(function(a){
     var src = a.dataset.src || "landing";
     var sep = LANDING.TG_APP_LINK.indexOf("?")>-1 ? "&" : "?";
-    a.href = LANDING.TG_APP_LINK + sep + "startapp=" + encodeURIComponent(src);
+    a.href = LANDING.TG_APP_LINK + sep + (LANDING.PARAM || "start") + "=" + encodeURIComponent(src);
     a.target = "_blank"; a.rel = "noopener";
     a.addEventListener("click", function(){ try{ if(window.ym && LANDING.YM_ID) ym(Number(LANDING.YM_ID), "reachGoal", "open_tg", {src:src}); }catch(e){} });
   });
