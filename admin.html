@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#0d1322">
+<title>StudentJob — окно основателя</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@1,500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL@20..48,400..600,0..1&display=swap" rel="stylesheet">
+<script>
+/* ===================== НАСТРОЙКИ ===================== */
+const CONFIG = {
+  // Та же ссылка Apps Script (/exec), что и в app.html
+  API_URL: "https://script.google.com/macros/s/AKfycbxAVOPftIB0_gFSg8OM-t8dr9PVyEbWPZAF0_H2eAoZ9mFti-IZZb-N9SNqvCJwSzw/exec",
+  // Таблица с данными (кнопка «Открыть таблицу»)
+  SHEET_URL: "https://docs.google.com/spreadsheets/d/19oyhMATdrOD8HPlGoSyONk-mWmJNsKttmrYn-WRq6JI/edit"
+};
+/* ==================================================== */
+</script>
+<style>
+:root{--bg:#0d1322;--panel:#121a2d;--navy:#1f2a44;--ink:#f1e9db;--muted:#a8a397;--soft:#7d7a73;--gold:#c6a75e;--gold-hi:#dcc285;--gold-bg:rgba(198,167,94,.14);
+--line:rgba(232,220,200,.11);--line-2:rgba(232,220,200,.2);--field:rgba(232,220,200,.045);--card:linear-gradient(180deg,rgba(232,220,200,.055),rgba(232,220,200,.02));
+--amber:#e3a77c;--amber-bg:rgba(227,167,124,.13);--red:#e88080;--red-bg:rgba(232,128,128,.12);--blue:#8fb4e8;--blue-bg:rgba(143,180,232,.12);--glow:rgba(198,167,94,.45);--on-gold:#141c2f}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--ink);font:14px/1.5 Inter,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;color-scheme:dark}
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(700px 420px at 90% -10%,rgba(198,167,94,.14),transparent 65%),radial-gradient(600px 500px at -10% 40%,rgba(31,42,68,.9),transparent 70%),var(--bg)}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none}
+select option{background:#1f2a44}
+a{color:var(--gold-hi);text-decoration:none}
+.ic{font-family:"Material Symbols Rounded";font-weight:normal;font-style:normal;font-size:20px;line-height:1;display:inline-block;white-space:nowrap;vertical-align:middle;overflow:hidden;max-width:1.2em;font-variation-settings:"FILL" 0,"wght" 400}
+em.s{font-family:"Playfair Display",Georgia,serif;font-style:italic;font-weight:500;color:var(--gold-hi)}
+.hidden{display:none!important}
+/* layout */
+.shell{display:grid;grid-template-columns:232px 1fr;min-height:100vh}
+aside{border-right:1px solid var(--line);padding:18px 12px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:4px;background:rgba(13,19,34,.6);backdrop-filter:blur(14px)}
+.brand{display:flex;align-items:center;gap:10px;padding:4px 10px 18px}
+.brand .lg{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;background:var(--gold-bg);border:1px solid rgba(220,194,133,.55);color:var(--gold-hi);max-width:none;font-size:22px;font-variation-settings:"FILL" 1}
+.brand b{display:block;font-size:13px;letter-spacing:.16em;text-transform:uppercase}
+.brand small{color:var(--muted);font-size:12px}
+.nav-btn{display:flex;align-items:center;gap:10px;width:100%;padding:10px 12px;border-radius:12px;color:var(--muted);font-weight:500;text-align:left}
+.nav-btn:hover{background:var(--field);color:var(--ink)}
+.nav-btn.on{background:var(--gold-bg);color:var(--gold-hi);box-shadow:inset 0 0 0 1px rgba(198,167,94,.3)}
+.nav-btn .cnt{margin-left:auto;font-size:11px;font-weight:700;background:var(--gold);color:var(--on-gold);border-radius:999px;padding:1px 7px}
+.nav-btn .cnt.muted{background:var(--field);color:var(--muted)}
+aside .grow{flex:1}
+main{padding:22px 28px 60px;min-width:0}
+.topbar{display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap}
+.topbar h1{font-size:26px;font-weight:600;letter-spacing:-.02em;flex:1}
+.upd{color:var(--soft);font-size:12px}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 14px;border-radius:999px;font-weight:600;font-size:13px;white-space:nowrap}
+.btn.gold{background:linear-gradient(180deg,#e3cb93,var(--gold));color:var(--on-gold);box-shadow:0 8px 24px -10px var(--glow)}
+.btn.ghost{background:var(--field);border:1px solid var(--line-2)}
+.btn.ghost:hover{border-color:rgba(220,194,133,.5)}
+.btn.danger{background:var(--red-bg);color:var(--red);border:1px solid rgba(232,128,128,.3)}
+.btn[disabled]{opacity:.5;pointer-events:none}
+.btn .ic{font-size:18px}
+/* cards & tiles */
+.grid{display:grid;gap:14px}
+.tiles{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px}
+.tile b{display:block;font-size:28px;font-weight:600;letter-spacing:-.02em;color:var(--gold-hi)}
+.tile small{color:var(--muted);font-size:12px}
+.tile.warn b{color:var(--amber)}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px}
+.panel h3{font-size:15px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.cols{grid-template-columns:2fr 1fr;margin-top:14px}
+.attn{display:flex;flex-direction:column;gap:8px}
+.attn button{display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:12px;background:var(--field);border:1px solid var(--line);text-align:left;width:100%}
+.attn button:hover{border-color:rgba(220,194,133,.45)}
+.attn b{color:var(--gold-hi);font-size:18px;min-width:26px}
+.funnel .row{display:grid;grid-template-columns:190px 1fr 60px;align-items:center;gap:10px;margin:7px 0}
+.funnel .bar{height:22px;border-radius:7px;background:var(--field);overflow:hidden}
+.funnel .bar i{display:block;height:100%;background:linear-gradient(90deg,rgba(220,194,133,.7),rgba(198,167,94,.35));border-radius:7px}
+.funnel span{color:var(--muted);font-size:13px}
+.funnel b{text-align:right}
+.chart svg{width:100%;height:200px;display:block}
+.legend{display:flex;gap:14px;font-size:12px;color:var(--muted);margin-top:6px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+/* toolbar & table */
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.chip{border:1px solid var(--line-2);background:var(--field);border-radius:999px;padding:6px 12px;font-size:13px;font-weight:500}
+.chip.on{background:linear-gradient(180deg,#e3cb93,var(--gold));color:var(--on-gold);border-color:transparent}
+.search{flex:1;min-width:200px;max-width:340px;display:flex;align-items:center;gap:6px;background:var(--field);border:1px solid var(--line-2);border-radius:999px;padding:6px 12px}
+.search input{background:none;border:0;outline:none;width:100%}
+.tbl-wrap{overflow:auto;border:1px solid var(--line);border-radius:16px;background:var(--card)}
+table{width:100%;border-collapse:collapse;min-width:720px}
+th{position:sticky;top:0;background:#151e33;text-align:left;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;padding:10px 12px;border-bottom:1px solid var(--line)}
+td{padding:11px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:0}
+tbody tr{cursor:pointer}
+tbody tr:hover td{background:rgba(232,220,200,.035)}
+td small{display:block;color:var(--muted);font-size:12px}
+.badge{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:600;border-radius:999px;padding:2px 9px;background:var(--field);border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.badge.g{background:var(--gold-bg);border-color:rgba(198,167,94,.35);color:var(--gold-hi)}
+.badge.a{background:var(--amber-bg);border-color:rgba(227,167,124,.3);color:var(--amber)}
+.badge.r{background:var(--red-bg);border-color:rgba(232,128,128,.3);color:var(--red)}
+.badge.b{background:var(--blue-bg);border-color:rgba(143,180,232,.3);color:var(--blue)}
+.empty{padding:40px;text-align:center;color:var(--muted)}
+/* drawer */
+.overlay{position:fixed;inset:0;background:rgba(5,8,16,.55);backdrop-filter:blur(2px);z-index:40}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(560px,100vw);background:#10182a;border-left:1px solid var(--line-2);z-index:41;display:flex;flex-direction:column;animation:slide .2s ease-out}
+@keyframes slide{from{transform:translateX(30px);opacity:0}to{transform:none;opacity:1}}
+.drawer header{display:flex;align-items:center;gap:10px;padding:16px 18px;border-bottom:1px solid var(--line)}
+.drawer header h2{flex:1;font-size:18px;font-weight:600}
+.drawer .body{flex:1;overflow:auto;padding:18px}
+.drawer footer{padding:14px 18px;border-top:1px solid var(--line);display:flex;gap:8px;flex-wrap:wrap}
+.x{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:var(--field);border:1px solid var(--line-2)}
+.kv{display:grid;grid-template-columns:150px 1fr;gap:4px 14px;padding:9px 0;border-bottom:1px solid var(--line)}
+.kv:last-child{border-bottom:0}
+.kv span{color:var(--muted);font-size:13px}
+.sec{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:600;margin:18px 0 8px}
+.sec:first-child{margin-top:0}
+.mini{background:var(--field);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:8px;cursor:pointer}
+.mini:hover{border-color:rgba(220,194,133,.4)}
+.mini b{display:block}
+.mini small{color:var(--muted)}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:5px}
+.input{width:100%;background:var(--field);border:1px solid var(--line-2);border-radius:10px;padding:9px 11px;outline:none}
+.input:focus{border-color:var(--gold)}
+textarea.input{min-height:80px;resize:vertical}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+/* modal */
+.modal{position:fixed;inset:0;z-index:60;display:grid;place-items:center;padding:20px;background:rgba(5,8,16,.6)}
+.modal .box{width:min(460px,100%);background:#141d31;border:1px solid var(--line-2);border-radius:18px;padding:20px}
+.modal h3{font-size:17px;margin-bottom:8px}
+.modal p{color:var(--muted);margin-bottom:14px}
+.modal .acts{display:flex;gap:8px;justify-content:flex-end;margin-top:14px}
+/* login */
+.login{min-height:100vh;display:grid;place-items:center;padding:20px}
+.login .box{width:min(380px,100%);text-align:center}
+.login .lg{width:64px;height:64px;margin:0 auto 14px;border-radius:18px;display:grid;place-items:center;background:var(--gold-bg);border:1px solid rgba(220,194,133,.55);color:var(--gold-hi);font-size:32px;max-width:none;box-shadow:0 0 40px -6px var(--glow)}
+.login h1{font-size:26px;font-weight:600;margin-bottom:6px}
+.login p{color:var(--muted);margin-bottom:18px}
+.login .input{text-align:center;padding:12px;font-size:15px;margin-bottom:10px}
+.login .btn{width:100%;justify-content:center;padding:12px}
+.login label.rem{display:flex;gap:8px;justify-content:center;align-items:center;color:var(--muted);font-size:13px;margin:4px 0 14px}
+.err{color:var(--red);font-size:13px;min-height:18px;margin-top:8px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--on-gold);padding:10px 16px;border-radius:12px;font-weight:500;opacity:0;pointer-events:none;transition:.25s;z-index:80}
+.toast.on{opacity:1;transform:translateX(-50%)}
+.loader{display:flex;justify-content:center;padding:60px}
+.loader i{width:30px;height:30px;border:3px solid var(--line-2);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.note{display:flex;gap:10px;background:var(--amber-bg);border:1px solid rgba(227,167,124,.25);color:var(--amber);border-radius:12px;padding:10px 12px;font-size:13px;margin-bottom:14px}
+/* mobile */
+@media(max-width:860px){
+  .shell{grid-template-columns:1fr}
+  aside{position:sticky;top:0;height:auto;z-index:20;flex-direction:row;overflow-x:auto;padding:8px;gap:4px;border-right:0;border-bottom:1px solid var(--line)}
+  aside .brand,aside .grow,aside .side-extra{display:none}
+  .nav-btn{width:auto;white-space:nowrap;padding:8px 12px}
+  main{padding:16px 14px 60px}
+  .cols{grid-template-columns:1fr}
+  .funnel .row{grid-template-columns:120px 1fr 44px}
+  .kv{grid-template-columns:120px 1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- ВХОД -->
+<div class="login hidden" id="loginView"><div class="box">
+  <div class="lg ic">admin_panel_settings</div>
+  <h1>Окно <em class="s">основателя</em></h1>
+  <p>StudentJob Almaty · только для владельца</p>
+  <input class="input" type="password" id="pass" placeholder="Пароль" autocomplete="current-password">
+  <label class="rem"><input type="checkbox" id="remember"> Запомнить на этом компьютере</label>
+  <button class="btn gold" id="loginBtn">Войти</button>
+  <div class="err" id="loginErr"></div>
+</div></div>
+
+<!-- НЕТ ДОСТУПА -->
+<div class="login hidden" id="deniedView"><div class="box">
+  <div class="lg ic">lock</div>
+  <h1>Нет <em class="s">доступа</em></h1>
+  <p id="deniedText">Это окно только для основателя StudentJob.</p>
+</div></div>
+
+<!-- ПАНЕЛЬ -->
+<div class="shell hidden" id="appView">
+  <aside>
+    <div class="brand"><span class="lg ic">school</span><div><b>StudentJob</b><small>Окно основателя</small></div></div>
+    <button class="nav-btn on" data-tab="overview"><span class="ic">dashboard</span>Обзор</button>
+    <button class="nav-btn" data-tab="vacancies"><span class="ic">work</span>Вакансии<span class="cnt hidden" id="cntPending"></span></button>
+    <button class="nav-btn" data-tab="apps"><span class="ic">send</span>Отклики<span class="cnt hidden" id="cntApps"></span></button>
+    <button class="nav-btn" data-tab="students"><span class="ic">school</span>Студенты</button>
+    <button class="nav-btn" data-tab="employers"><span class="ic">storefront</span>Работодатели</button>
+    <button class="nav-btn" data-tab="deletions"><span class="ic">delete</span>Удаление<span class="cnt hidden" id="cntDel"></span></button>
+    <div class="grow"></div>
+    <a class="nav-btn side-extra" id="sheetLink" target="_blank" rel="noopener"><span class="ic">table</span>Открыть таблицу</a>
+    <button class="nav-btn side-extra" id="logoutBtn"><span class="ic">logout</span>Выйти</button>
+  </aside>
+  <main>
+    <div class="topbar">
+      <h1 id="title">Обзор</h1>
+      <span class="upd" id="upd"></span>
+      <button class="btn ghost" id="refreshBtn"><span class="ic">refresh</span>Обновить</button>
+    </div>
+    <div id="botNote" class="note hidden"><span class="ic">info</span><span>Бот не подключён: сообщения и уведомления не отправляются. Добавьте свойство <b>BOT_TOKEN</b> в настройках скрипта.</span></div>
+    <div id="view"><div class="loader"><i></i></div></div>
+  </main>
+</div>
+
+<div id="drawerRoot"></div>
+<div id="modalRoot"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+"use strict";
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const money=n=>Number(n||0).toLocaleString("ru-RU").replace(/[\s,]/g," ")+" ₸";
+const store={get(k){try{return localStorage.getItem("sja_"+k);}catch(e){return null;}},set(k,v){try{localStorage.setItem("sja_"+k,v);}catch(e){}},del(k){try{localStorage.removeItem("sja_"+k);sessionStorage.removeItem("sja_"+k);}catch(e){}},
+  sget(k){try{return sessionStorage.getItem("sja_"+k);}catch(e){return null;}},sset(k,v){try{sessionStorage.setItem("sja_"+k,v);}catch(e){}}};
+const tg=(window.Telegram&&window.Telegram.WebApp)||null;
+const inTg=!!(tg&&tg.initData);
+if(inTg){try{tg.ready();tg.expand();tg.setHeaderColor("#0d1322");tg.setBackgroundColor("#0d1322");}catch(e){}}
+
+const ST_VAC={"на проверке":["На проверке","a"],"опубликована":["Опубликована","g"],"закрыта":["Закрыта",""],"отклонена":["Отклонена","r"]};
+const ST_PAY={"ждём оплату":["Ждёт оплаты","a"],"оплата заявлена":["Оплата заявлена","b"],"оплачено":["Оплачено","g"],"возврат":["Возврат","r"],"не требуется":["Пилот",""]};
+const ST_APP={"новый":["Новый","a"],"просмотрен":["Просмотрен","b"],"собеседование":["Собеседование","g"],"вышел на работу":["Нанят","g"],"отказ":["Отказ","r"]};
+const badge=(m,s)=>{const x=m[s]||[s||"—",""];return `<span class="badge ${x[1]}">${esc(x[0])}</span>`;};
+function toast(t){const el=$("toast");el.textContent=t;el.classList.add("on");clearTimeout(toast._t);toast._t=setTimeout(()=>el.classList.remove("on"),2600);}
+function tgLink(c){const m=String(c||"").trim().match(/^@([A-Za-z0-9_]{4,32})$/);return m?"https://t.me/"+m[1]:"";}
+function contact(c){const t=tgLink(c);if(t)return `<a href="${t}" target="_blank" rel="noopener">${esc(c)}</a>`;const d=String(c||"").replace(/[^\d+]/g,"");if(d.replace(/\D/g,"").length>=10)return `<a href="tel:${esc(d)}">${esc(c)}</a>`;return esc(c||"—");}
+function fmtDate(s){const m=String(s||"").match(/^(\d{4})-(\d{2})-(\d{2})(?:\s+(\d{2}:\d{2}))?/);if(!m)return esc(s||"");const mon=["янв","фев","мар","апр","мая","июн","июл","авг","сен","окт","ноя","дек"];return Number(m[3])+" "+mon[Number(m[2])-1]+(m[4]?", "+m[4]:"");}
+
+/* ---------- API ---------- */
+let adminKey="";
+async function api(action,data){
+  const body={action,data:data||{}};
+  if(adminKey) body.adminKey=adminKey; else if(inTg) body.initData=tg.initData;
+  const r=await fetch(CONFIG.API_URL,{method:"POST",body:JSON.stringify(body)});
+  if(!r.ok) throw new Error("NET");
+  const j=await r.json(); if(!j.ok) throw new Error(j.error||"SERVER"); return j;
+}
+function errMsg(e){const m=String(e&&e.message||e);return ({BAD_PASSWORD:"Неверный пароль",LOCKED:"Слишком много попыток. Подождите 10 минут",NO_ADMIN_PASSWORD:"Пароль не задан: добавьте свойство ADMIN_PASSWORD в скрипт",FORBIDDEN:"Нет доступа",NO_BOT_TOKEN:"Бот не подключён (нет BOT_TOKEN)",NET:"Нет связи с сервером",AUTH:"Сессия Telegram устарела, перезапустите аппку",NOT_FOUND:"Запись не найдена — обновите данные"})[m]||(/fetch|network/i.test(m)?"Нет связи с сервером":"Ошибка: "+m);}
+
+/* ---------- вход ---------- */
+function showView(id){["loginView","deniedView","appView"].forEach(v=>$(v).classList.toggle("hidden",v!==id));}
+async function tryLogin(key,remember){
+  adminKey=key; $("loginErr").textContent=""; $("loginBtn").disabled=true;
+  try{ await api("adminCheck"); if(remember) store.set("key",key); else store.sset("key",key); start(); }
+  catch(e){ adminKey=""; store.del("key"); $("loginErr").textContent=errMsg(e); showView("loginView"); }
+  $("loginBtn").disabled=false;
+}
+$("loginBtn").onclick=()=>{const k=$("pass").value.trim(); if(k) tryLogin(k,$("remember").checked);};
+$("pass").addEventListener("keydown",e=>{if(e.key==="Enter")$("loginBtn").click();});
+$("logoutBtn").onclick=()=>{store.del("key");adminKey="";if(inTg){showView("deniedView");$("deniedText").textContent="Вы вышли. Закройте окно.";}else{$("pass").value="";showView("loginView");}};
+$("sheetLink").href=CONFIG.SHEET_URL;
+
+async function boot(){
+  const saved=store.get("key")||store.sget("key");
+  if(inTg && !saved){
+    try{ await api("adminCheck"); start(); }
+    catch(e){ showView("deniedView"); $("deniedText").textContent=errMsg(e)==="Нет доступа"?"Это окно только для основателя StudentJob.":errMsg(e); }
+    return;
+  }
+  if(saved){ tryLogin(saved,!!store.get("key")); return; }
+  showView("loginView"); setTimeout(()=>$("pass").focus(),50);
+}
+
+/* ---------- данные ---------- */
+let D=null, tab="overview";
+const F={vacStatus:"на проверке",vacQ:"",appStatus:"all",appQ:"",stQ:"",empQ:""};
+async function load(silent){
+  if(!silent) $("view").innerHTML='<div class="loader"><i></i></div>';
+  try{ D=await api("adminAll"); }catch(e){ $("view").innerHTML=`<div class="empty">${esc(errMsg(e))}</div>`; return; }
+  $("upd").textContent="обновлено "+new Date().toLocaleTimeString("ru-RU",{hour:"2-digit",minute:"2-digit"});
+  $("botNote").classList.toggle("hidden",!!D.bot);
+  const pend=D.vacancies.filter(v=>v.status==="на проверке").length+D.vacancies.filter(v=>v.payment==="оплата заявлена").length;
+  setCnt("cntPending",pend); setCnt("cntApps",D.applications.filter(a=>a.status==="новый").length,true); setCnt("cntDel",D.deletions.filter(x=>!/удалено/.test(x.status)).length);
+  render();
+}
+function setCnt(id,n,muted){const el=$(id);el.textContent=n;el.classList.toggle("hidden",!n);el.classList.toggle("muted",!!muted);}
+function start(){showView("appView");load();}
+$("refreshBtn").onclick=()=>load();
+document.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>{tab=b.dataset.tab;document.querySelectorAll("[data-tab]").forEach(x=>x.classList.toggle("on",x===b));render();window.scrollTo(0,0);});
+function goTab(t,patch){Object.assign(F,patch||{});const b=document.querySelector(`[data-tab="${t}"]`);if(b)b.click();}
+
+/* ---------- работодатели (собираются из вакансий) ---------- */
+function employers(){
+  const m={};
+  D.vacancies.forEach(v=>{const k=v.ownerId||("c:"+v.company);m[k]=m[k]||{key:k,tgId:v.ownerId,company:v.company,contact:v.contact,phone:v.phone,telegram:v.telegram,bin:v.bin,vac:[],paid:0,apps:0,hired:0};
+    const e=m[k];e.vac.push(v);if(v.payment==="оплачено")e.paid++;if(!e.company)e.company=v.company;});
+  D.applications.forEach(a=>{const v=D.vacancies.find(x=>x.id===a.vacancyId);if(!v)return;const e=m[v.ownerId||("c:"+v.company)];if(!e)return;e.apps++;if(a.status==="вышел на работу")e.hired++;});
+  return Object.values(m);
+}
+
+/* ---------- рендер ---------- */
+function render(){
+  if(!D) return;
+  const T={overview:"Обзор",vacancies:"Вакансии",apps:"Отклики",students:"Студенты",employers:"Работодатели",deletions:"Запросы на удаление"};
+  $("title").innerHTML=esc(T[tab]);
+  ({overview:rOverview,vacancies:rVacancies,apps:rApps,students:rStudents,employers:rEmployers,deletions:rDeletions})[tab]();
+}
+function rOverview(){
+  const V=D.vacancies,A=D.applications,S=D.students;
+  const applied=new Set(A.map(a=>a.tgId)).size, inter=A.filter(a=>a.status==="собеседование"||a.status==="вышел на работу").length, hired=A.filter(a=>a.status==="вышел на работу").length;
+  const paid=V.filter(v=>v.payment==="оплачено").length, emps=employers().length;
+  const tile=(n,t,w)=>`<div class="tile${w?" warn":""}"><b>${n}</b><small>${t}</small></div>`;
+  const pend=V.filter(v=>v.status==="на проверке").length, payClaim=V.filter(v=>v.payment==="оплата заявлена").length, newApps=A.filter(a=>a.status==="новый").length, dels=D.deletions.filter(x=>!/удалено/.test(x.status)).length;
+  const fun=[["Открыли аппку",D.uniqueOpeners],["Заполнили анкету",S.length],["Откликнулись",applied],["Собеседование",inter],["Наняты",hired]];
+  const max=Math.max(1,...fun.map(f=>f[1]));
+  $("view").innerHTML=`
+    <div class="grid tiles">${tile(D.uniqueOpeners,"открыли аппку")}${tile(S.length,"анкет студентов")}${tile(emps,"работодателей")}${tile(V.length,"вакансий всего")}${tile(V.filter(v=>v.status==="опубликована").length,"опубликовано")}${tile(A.length,"откликов")}${tile(hired,"нанято")}${tile(money(paid*(D.price||2000)),"выручка ("+paid+" оплат)")}</div>
+    <div class="grid cols">
+      <div class="panel chart"><h3><span class="ic">bar_chart</span>Активность по дням</h3>${chart(D.byDay)}
+        <div class="legend"><span><i style="background:#c6a75e"></i>открыли аппку</span><span><i style="background:#8fb4e8"></i>новые анкеты</span><span><i style="background:#e3a77c"></i>отклики</span></div></div>
+      <div class="panel"><h3><span class="ic">priority_high</span>Требует внимания</h3><div class="attn">
+        <button data-go="vacancies" data-f="на проверке"><b>${pend}</b>вакансий ждут проверки</button>
+        <button data-go="vacancies" data-f="pay"><b>${payClaim}</b>работодателей заявили оплату</button>
+        <button data-go="apps" data-f="новый"><b>${newApps}</b>новых откликов без ответа</button>
+        <button data-go="deletions"><b>${dels}</b>запросов на удаление данных</button>
+      </div></div>
+    </div>
+    <div class="grid cols">
+      <div class="panel funnel"><h3><span class="ic">filter_alt</span>Воронка студентов</h3>
+        ${fun.map(f=>`<div class="row"><span>${f[0]}</span><div class="bar"><i style="width:${Math.max(2,f[1]/max*100)}%"></i></div><b>${f[1]}</b></div>`).join("")}</div>
+      <div class="panel"><h3><span class="ic">campaign</span>Откуда приходят</h3>
+        ${D.bySource.length?`<table style="min-width:0"><tbody>${D.bySource.map(s=>`<tr style="cursor:default"><td>${esc(s.source)}</td><td style="text-align:right"><b>${s.users}</b> <small style="display:inline">чел.</small></td></tr>`).join("")}</tbody></table>`:`<div class="empty" style="padding:16px">Пока нет данных</div>`}
+        <p class="upd" style="margin-top:10px">Метки ?startapp=… в ссылках. direct — без метки.</p></div>
+    </div>`;
+  $("view").querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>{const t=b.dataset.go,f=b.dataset.f;goTab(t,t==="vacancies"?{vacStatus:f}:t==="apps"?{appStatus:f}:{});});
+}
+function chart(days){
+  if(!days.length) return `<div class="empty" style="padding:30px">Данные появятся после первых посещений</div>`;
+  const W=640,H=200,P=24,n=days.length,max=Math.max(1,...days.map(d=>Math.max(d.opens,d.students,d.apps)));
+  const gw=(W-P*2)/n, bw=Math.min(14,gw/4);
+  let s=`<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">`;
+  for(let i=0;i<=4;i++){const y=P+(H-P*2)*i/4;s+=`<line x1="${P}" x2="${W-P}" y1="${y}" y2="${y}" stroke="rgba(232,220,200,.08)"/>`;}
+  days.forEach((d,i)=>{const x=P+gw*i+gw/2;[[d.opens,"#c6a75e"],[d.students,"#8fb4e8"],[d.apps,"#e3a77c"]].forEach(([v,c],j)=>{const h=(H-P*2)*v/max;s+=`<rect x="${x+(j-1.5)*bw}" y="${H-P-h}" width="${bw-2}" height="${h}" rx="2" fill="${c}"><title>${d.day}: ${v}</title></rect>`;});
+    if(n<=14||i%2===0) s+=`<text x="${x}" y="${H-6}" fill="#7d7a73" font-size="10" text-anchor="middle">${d.day.slice(8,10)}.${d.day.slice(5,7)}</text>`;});
+  s+=`<text x="${P}" y="${P-8}" fill="#7d7a73" font-size="10">${max}</text></svg>`;
+  return s;
+}
+function toolbar(chips,cur,key,q,qKey,ph){
+  return `<div class="toolbar">${chips.map(([k,t])=>`<button class="chip${cur===k?" on":""}" data-chip="${k}" data-key="${key}">${t}</button>`).join("")}
+    <label class="search"><span class="ic">search</span><input data-q="${qKey}" value="${esc(q)}" placeholder="${ph}"></label></div>`;
+}
+function bindToolbar(){
+  $("view").querySelectorAll("[data-chip]").forEach(b=>b.onclick=()=>{F[b.dataset.key]=b.dataset.chip;render();});
+  $("view").querySelectorAll("[data-q]").forEach(i=>i.oninput=()=>{F[i.dataset.q]=i.value;clearTimeout(i._t);i._t=setTimeout(()=>{const pos=i.selectionStart;render();const n=$("view").querySelector(`[data-q="${i.dataset.q}"]`);if(n){n.focus();n.setSelectionRange(pos,pos);}},200);});
+}
+const match=(q,...xs)=>!q||xs.join(" ").toLowerCase().includes(q.toLowerCase());
+function rVacancies(){
+  const chips=[["на проверке","На проверке"],["pay","Оплаты"],["опубликована","Опубликованы"],["закрыта","Закрыты"],["отклонена","Отклонены"],["all","Все"]];
+  let L=D.vacancies.filter(v=>F.vacStatus==="all"?true:F.vacStatus==="pay"?(v.tariff==="Стандарт"&&v.payment!=="оплачено"&&v.payment!=="не требуется"):v.status===F.vacStatus).filter(v=>match(F.vacQ,v.company,v.position,v.contact,v.phone,v.address));
+  const cnt=id=>D.applications.filter(a=>a.vacancyId===id).length;
+  $("view").innerHTML=toolbar(chips,F.vacStatus,"vacStatus",F.vacQ,"vacQ","Компания, должность, телефон")+
+   (L.length?`<div class="tbl-wrap"><table><thead><tr><th>Вакансия</th><th>Статус</th><th>Тариф / оплата</th><th>График</th><th>Ставка</th><th>Отклики</th><th>Создана</th></tr></thead><tbody>
+   ${L.map(v=>`<tr data-vac="${esc(v.id)}"><td><b>${esc(v.position)}</b><small>${esc(v.company)} · ${esc(v.district||"")}</small></td><td>${badge(ST_VAC,v.status)}</td>
+     <td>${esc(v.tariff||"Пилот")}<small>${v.tariff==="Стандарт"?badge(ST_PAY,v.payment):""}</small></td><td>${esc(v.days)}<small>${esc(v.from)}–${esc(v.to)}</small></td><td>${money(v.pay)}/ч</td><td>${cnt(v.id)}</td><td>${fmtDate(v.created)}</td></tr>`).join("")}</tbody></table></div>`
+   :`<div class="empty">Здесь пусто</div>`);
+  bindToolbar(); $("view").querySelectorAll("[data-vac]").forEach(r=>r.onclick=()=>openVac(r.dataset.vac));
+}
+function rApps(){
+  const chips=[["all","Все"],["новый","Новые"],["просмотрен","Просмотрены"],["собеседование","Собеседование"],["вышел на работу","Наняты"],["отказ","Отказ"]];
+  const L=D.applications.filter(a=>F.appStatus==="all"||a.status===F.appStatus).filter(a=>match(F.appQ,a.name,a.contact,a.company,a.position,a.uni));
+  $("view").innerHTML=toolbar(chips,F.appStatus,"appStatus",F.appQ,"appQ","Студент, компания, должность")+
+   (L.length?`<div class="tbl-wrap"><table><thead><tr><th>Студент</th><th>Вакансия</th><th>Статус</th><th>Собеседование</th><th>Отклик</th></tr></thead><tbody>
+   ${L.map(a=>`<tr data-app="${esc(a.id)}"><td><b>${esc(a.name)}</b><small>${esc(a.uni)} · ${esc(a.contact)}</small></td><td>${esc(a.position)}<small>${esc(a.company)}</small></td><td>${badge(ST_APP,a.status)}</td>
+     <td>${a.interview&&a.interview.date?fmtDate(a.interview.date)+", "+esc(a.interview.time):"—"}</td><td>${fmtDate(a.created)}</td></tr>`).join("")}</tbody></table></div>`:`<div class="empty">Здесь пусто</div>`);
+  bindToolbar(); $("view").querySelectorAll("[data-app]").forEach(r=>r.onclick=()=>openApp(r.dataset.app));
+}
+function rStudents(){
+  const L=D.students.filter(s=>match(F.stQ,s.name,s.contact,s.username,s.uni,s.district));
+  $("view").innerHTML=toolbar([],"","",F.stQ,"stQ","Имя, контакт, вуз")+
+   (L.length?`<div class="tbl-wrap"><table><thead><tr><th>Студент</th><th>Вуз / район</th><th>Окна</th><th>Ставка</th><th>Отклики</th><th>Источник</th><th>Анкета</th></tr></thead><tbody>
+   ${L.map(s=>`<tr data-st="${esc(s.tgId)}"><td><b>${esc(s.name)}</b><small>${esc(s.contact)}</small></td><td>${esc(s.uni)}<small>${esc(s.district)}</small></td><td>${esc(s.hours||"")} ч/нед</td>
+     <td>${s.rate&&s.rate!=="0"?"от "+money(s.rate):"—"}</td><td>${D.applications.filter(a=>a.tgId===s.tgId).length}</td><td>${esc(s.source||"")}</td><td>${fmtDate(s.created)}</td></tr>`).join("")}</tbody></table></div>`:`<div class="empty">Анкет пока нет</div>`);
+  bindToolbar(); $("view").querySelectorAll("[data-st]").forEach(r=>r.onclick=()=>openStudent(r.dataset.st));
+}
+function rEmployers(){
+  const L=employers().filter(e=>match(F.empQ,e.company,e.contact,e.phone,e.telegram));
+  $("view").innerHTML=toolbar([],"","",F.empQ,"empQ","Компания, контакт, телефон")+
+   (L.length?`<div class="tbl-wrap"><table><thead><tr><th>Компания</th><th>Контакт</th><th>Вакансий</th><th>Откликов</th><th>Нанято</th><th>Оплат</th></tr></thead><tbody>
+   ${L.map(e=>`<tr data-emp="${esc(e.key)}"><td><b>${esc(e.company)}</b><small>БИН ${esc(e.bin||"—")}</small></td><td>${esc(e.contact)}<small>${esc(e.phone)}${e.telegram?" · "+esc(e.telegram):""}</small></td><td>${e.vac.length}</td><td>${e.apps}</td><td>${e.hired}</td><td>${e.paid}</td></tr>`).join("")}</tbody></table></div>`:`<div class="empty">Работодателей пока нет</div>`);
+  bindToolbar(); $("view").querySelectorAll("[data-emp]").forEach(r=>r.onclick=()=>openEmployer(r.dataset.emp));
+}
+function rDeletions(){
+  const L=D.deletions;
+  $("view").innerHTML=`<p class="upd" style="margin-bottom:12px">Люди, нажавшие «Удалить мои данные». Удалите их анкету и отклики в течение 3 дней.</p>`+
+   (L.length?`<div class="tbl-wrap"><table><thead><tr><th>Кто</th><th>Когда</th><th>Статус</th><th></th></tr></thead><tbody>
+   ${L.map(x=>{const st=D.students.find(s=>s.tgId===x.tgId);const done=/удалено/.test(x.status);
+     return `<tr style="cursor:default"><td><b>${esc(st?st.name:(x.username||x.tgId))}</b><small>${esc(x.contact||x.username||"")}</small></td><td>${fmtDate(x.time)}</td><td>${done?'<span class="badge g">удалено</span>':'<span class="badge a">ждёт удаления</span>'}</td>
+     <td style="text-align:right">${done?`<button class="btn ghost" data-delreq="${esc(x.tgId)}">Убрать из списка</button>`:`<button class="btn danger" data-wipe="${esc(x.tgId)}"><span class="ic">delete_forever</span>Удалить все данные</button>`}</td></tr>`;}).join("")}</tbody></table></div>`:`<div class="empty">Запросов нет</div>`);
+  $("view").querySelectorAll("[data-wipe]").forEach(b=>b.onclick=()=>confirmDel("student",b.dataset.wipe,"Удалить анкету и все отклики этого человека? Это нельзя отменить."));
+  $("view").querySelectorAll("[data-delreq]").forEach(b=>b.onclick=()=>doDelete("deletion",b.dataset.delreq));
+}
+
+/* ---------- боковая карточка ---------- */
+function drawer(title,body,foot){
+  $("drawerRoot").innerHTML=`<div class="overlay" data-close></div><div class="drawer"><header><h2>${title}</h2><button class="x" data-close><span class="ic">close</span></button></header><div class="body">${body}</div>${foot?`<footer>${foot}</footer>`:""}</div>`;
+  $("drawerRoot").querySelectorAll("[data-close]").forEach(b=>b.onclick=closeDrawer);
+  return $("drawerRoot").querySelector(".drawer");
+}
+function closeDrawer(){$("drawerRoot").innerHTML="";}
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){if($("modalRoot").innerHTML)$("modalRoot").innerHTML="";else closeDrawer();}});
+const kv=(k,v)=>`<div class="kv"><span>${k}</span><div>${v||"—"}</div></div>`;
+
+function openVac(id){
+  const v=D.vacancies.find(x=>x.id===id); if(!v) return;
+  const apps=D.applications.filter(a=>a.vacancyId===id);
+  const body=`<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">${badge(ST_VAC,v.status)}<span class="badge">${esc(v.tariff||"Пилот")}</span>${v.tariff==="Стандарт"?badge(ST_PAY,v.payment):""}</div>
+    <div class="sec">Проверка компании</div>${kv("Компания",esc(v.company))}${kv("БИН/ИИН",esc(v.bin))}${kv("Сфера",esc(v.type))}${kv("Адрес",esc(v.address)+(v.district?"<br><small style='color:var(--muted)'>"+esc(v.district)+" р-н</small>":""))}
+    ${kv("Контакт",esc(v.contact))}${kv("Телефон",contact(v.phone))}${kv("Telegram",v.telegram?contact(v.telegram.startsWith("@")?v.telegram:"@"+v.telegram):"")}
+    <div class="sec">Условия</div>${kv("Должность",esc(v.position))}${kv("Дни и часы",esc(v.days)+" · "+esc(v.from)+"–"+esc(v.to))}${kv("Ставка",money(v.pay)+"/ч · "+esc(v.payout))}
+    ${kv("Без опыта",esc(v.noExp))}${kv("Обязанности",esc(v.duties))}${kv("Требования",esc(v.requirements))}${kv("Рядом с вузами",esc(v.nearUnis))}
+    <div class="sec">Решение</div><div class="field"><label>Заметка команды / причина отказа (увидит работодатель при отказе)</label><textarea class="input" id="vNote">${esc(v.note||"")}</textarea></div>
+    <div class="sec">Отклики (${apps.length})</div>${apps.length?apps.map(a=>`<div class="mini" data-app="${esc(a.id)}"><b>${esc(a.name)} ${badge(ST_APP,a.status)}</b><small>${esc(a.uni)} · ${fmtDate(a.created)}</small></div>`).join(""):`<p class="upd">Пока нет</p>`}
+    <p class="upd" style="margin-top:14px">id ${esc(v.id)} · создана ${fmtDate(v.created)}</p>`;
+  let foot="";
+  if(v.status!=="опубликована") foot+=`<button class="btn gold" data-set="опубликована"><span class="ic">check</span>Опубликовать</button>`;
+  if(v.status==="на проверке") foot+=`<button class="btn danger" data-set="отклонена">Отклонить</button>`;
+  if(v.status==="опубликована") foot+=`<button class="btn ghost" data-set="закрыта">Закрыть</button>`;
+  if(v.tariff==="Стандарт"&&v.payment!=="оплачено") foot+=`<button class="btn ghost" data-pay="оплачено"><span class="ic">payments</span>Оплачено</button>`;
+  if(v.payment==="оплачено") foot+=`<button class="btn ghost" data-pay="возврат">Возврат</button>`;
+  foot+=`<button class="btn ghost" data-edit><span class="ic">edit</span>Править</button>`;
+  if(v.ownerId) foot+=`<button class="btn ghost" data-msg><span class="ic">send</span>Написать</button>`;
+  foot+=`<button class="btn danger" data-del><span class="ic">delete</span></button>`;
+  const dr=drawer(esc(v.position)+" · "+esc(v.company),body,foot);
+  dr.querySelectorAll("[data-set]").forEach(b=>b.onclick=async()=>{const note=$("vNote").value.trim();if(b.dataset.set==="отклонена"&&!note){toast("Напишите причину отказа");$("vNote").focus();return;}
+    await act(()=>api("adminSetVacancy",{vacancyId:v.id,status:b.dataset.set,note}),{"опубликована":"Опубликовано, работодатель получит уведомление","отклонена":"Отклонено","закрыта":"Закрыто"}[b.dataset.set]);});
+  dr.querySelectorAll("[data-pay]").forEach(b=>b.onclick=()=>act(()=>api("adminSetVacancy",{vacancyId:v.id,payment:b.dataset.pay}),b.dataset.pay==="оплачено"?"Оплата отмечена":"Отмечен возврат"));
+  dr.querySelector("[data-edit]").onclick=()=>editVac(v);
+  const m=dr.querySelector("[data-msg]"); if(m) m.onclick=()=>message(v.ownerId,v.contact+" ("+v.company+")");
+  dr.querySelector("[data-del]").onclick=()=>confirmDel("vacancy",v.id,`Удалить вакансию «${v.position}» и все ${apps.length} откликов на неё? Это нельзя отменить.`);
+  dr.querySelectorAll("[data-app]").forEach(x=>x.onclick=()=>openApp(x.dataset.app));
+}
+function editVac(v){
+  const f=[["company","Компания"],["bin","БИН/ИИН"],["position","Должность"],["address","Адрес"],["district","Район"],["contact","Контактное лицо"],["phone","Телефон"],["telegram","Telegram"],["days","Дни (Пн,Вт,…)"],["from","С (18:00)"],["to","До (22:00)"],["pay","Ставка ₸/ч"],["payout","Выплата"],["noExp","Без опыта (да/нет)"],["nearUnis","Рядом с вузами"]];
+  const body=f.map(([k,l])=>`<div class="field"><label>${l}</label><input class="input" data-f="${k}" value="${esc(v[k]||"")}"></div>`).join("")+
+    `<div class="field"><label>Обязанности</label><textarea class="input" data-f="duties">${esc(v.duties||"")}</textarea></div><div class="field"><label>Требования</label><textarea class="input" data-f="requirements">${esc(v.requirements||"")}</textarea></div>`;
+  const dr=drawer("Правка вакансии",body,`<button class="btn gold" data-save><span class="ic">save</span>Сохранить</button><button class="btn ghost" data-back>Отмена</button>`);
+  dr.querySelector("[data-back]").onclick=()=>openVac(v.id);
+  dr.querySelector("[data-save]").onclick=async()=>{const fields={};dr.querySelectorAll("[data-f]").forEach(i=>{if(i.value!==String(v[i.dataset.f]||""))fields[i.dataset.f]=i.value.trim();});
+    if(!Object.keys(fields).length){openVac(v.id);return;}
+    await act(()=>api("adminEditVacancy",{vacancyId:v.id,fields}),"Сохранено",()=>openVac(v.id));};
+}
+function openApp(id){
+  const a=D.applications.find(x=>x.id===id); if(!a) return;
+  const v=D.vacancies.find(x=>x.id===a.vacancyId)||{};
+  const body=`<div style="margin-bottom:12px">${badge(ST_APP,a.status)}</div>
+    <div class="sec">Студент</div>${kv("Имя",esc(a.name))}${kv("Контакт",contact(a.contact))}${kv("Вуз",esc(a.uni))}${kv("Опыт",esc(a.exp))}${kv("Свободные окна",esc(a.windows))}
+    <div class="sec">Вакансия</div><div class="mini" data-vac="${esc(a.vacancyId)}"><b>${esc(a.position)}</b><small>${esc(a.company)} · ${esc(v.days||"")} ${esc(v.from||"")}–${esc(v.to||"")}</small></div>
+    ${a.interview&&a.interview.date?`<div class="sec">Собеседование</div>${kv("Когда",fmtDate(a.interview.date)+", "+esc(a.interview.time))}${kv("Где",esc(a.interview.place))}${kv("Сообщение",esc(a.interview.message))}`:""}
+    <div class="sec">Статус</div><div class="field"><select class="input" id="aStatus">${Object.keys(ST_APP).map(k=>`<option value="${k}"${k===a.status?" selected":""}>${ST_APP[k][0]}</option>`).join("")}</select></div>
+    <p class="upd">Отклик ${fmtDate(a.created)}${a.updated?" · обновлён "+fmtDate(a.updated):""} · источник ${esc(a.source||"—")}</p>`;
+  const foot=`<button class="btn gold" data-save><span class="ic">save</span>Сохранить статус</button>${a.tgId&&/^\d+$/.test(a.tgId)?`<button class="btn ghost" data-msg><span class="ic">send</span>Написать студенту</button>`:""}<button class="btn danger" data-del><span class="ic">delete</span></button>`;
+  const dr=drawer("Отклик · "+esc(a.name),body,foot);
+  dr.querySelector("[data-save]").onclick=()=>{const s=$("aStatus").value;if(s===a.status){toast("Статус не изменился");return;}
+    if(s==="собеседование"&&!(a.interview&&a.interview.date)){toast("Дату собеседования назначает работодатель в аппке");}
+    act(()=>api("adminSetApplicant",{appId:a.id,status:s}),"Статус обновлён, студент получит уведомление");};
+  const m=dr.querySelector("[data-msg]"); if(m) m.onclick=()=>message(a.tgId,a.name);
+  dr.querySelector("[data-del]").onclick=()=>confirmDel("application",a.id,`Удалить отклик ${a.name} на «${a.position}»?`);
+  dr.querySelectorAll("[data-vac]").forEach(x=>x.onclick=()=>openVac(x.dataset.vac));
+}
+function openStudent(tgId){
+  const s=D.students.find(x=>x.tgId===tgId); if(!s) return;
+  const apps=D.applications.filter(a=>a.tgId===tgId);
+  const body=`<div class="sec">Анкета</div>${kv("Имя",esc(s.name))}${kv("Контакт",contact(s.contact))}${kv("Telegram",s.username?contact(s.username):"")}${kv("Вуз",esc(s.uni))}${kv("Район",esc(s.district))}
+    ${kv("Свободные окна",esc(s.windows)+"<br><small style='color:var(--muted)'>"+esc(s.hours||0)+" ч в неделю</small>")}${kv("Ставка от",s.rate&&s.rate!=="0"?money(s.rate)+"/ч":"не важно")}${kv("Сферы",esc(s.spheres))}${kv("Опыт",esc(s.exp))}${kv("Источник",esc(s.source))}${kv("Анкета",fmtDate(s.created)+(s.updated&&s.updated!==s.created?" · обновлена "+fmtDate(s.updated):""))}
+    <div class="sec">Отклики (${apps.length})</div>${apps.length?apps.map(a=>`<div class="mini" data-app="${esc(a.id)}"><b>${esc(a.position)} ${badge(ST_APP,a.status)}</b><small>${esc(a.company)} · ${fmtDate(a.created)}</small></div>`).join(""):`<p class="upd">Пока нет</p>`}
+    <p class="upd" style="margin-top:14px">Telegram ID ${esc(s.tgId)}</p>`;
+  const foot=`${/^\d+$/.test(s.tgId)?`<button class="btn ghost" data-msg><span class="ic">send</span>Написать</button>`:""}<button class="btn danger" data-del><span class="ic">delete_forever</span>Удалить студента</button>`;
+  const dr=drawer(esc(s.name),body,foot);
+  const m=dr.querySelector("[data-msg]"); if(m) m.onclick=()=>message(s.tgId,s.name);
+  dr.querySelector("[data-del]").onclick=()=>confirmDel("student",s.tgId,`Удалить анкету ${s.name} и все ${apps.length} откликов? Это нельзя отменить.`);
+  dr.querySelectorAll("[data-app]").forEach(x=>x.onclick=()=>openApp(x.dataset.app));
+}
+function openEmployer(key){
+  const e=employers().find(x=>x.key===key); if(!e) return;
+  const body=`<div class="sec">Компания</div>${kv("Название",esc(e.company))}${kv("БИН/ИИН",esc(e.bin))}${kv("Контакт",esc(e.contact))}${kv("Телефон",contact(e.phone))}${kv("Telegram",e.telegram?contact(e.telegram.startsWith("@")?e.telegram:"@"+e.telegram):"")}
+    ${kv("Итого",`${e.vac.length} вакансий · ${e.apps} откликов · ${e.hired} нанято · ${e.paid} оплат`)}
+    <div class="sec">Вакансии</div>${e.vac.map(v=>`<div class="mini" data-vac="${esc(v.id)}"><b>${esc(v.position)} ${badge(ST_VAC,v.status)}</b><small>${esc(v.tariff||"Пилот")} · ${fmtDate(v.created)}</small></div>`).join("")}`;
+  const dr=drawer(esc(e.company),body,e.tgId?`<button class="btn ghost" data-msg><span class="ic">send</span>Написать работодателю</button>`:"");
+  const m=dr.querySelector("[data-msg]"); if(m) m.onclick=()=>message(e.tgId,e.contact+" ("+e.company+")");
+  dr.querySelectorAll("[data-vac]").forEach(x=>x.onclick=()=>openVac(x.dataset.vac));
+}
+
+/* ---------- действия ---------- */
+async function act(fn,okText,after){
+  document.querySelectorAll(".drawer footer .btn").forEach(b=>b.disabled=true);
+  try{ await fn(); toast(okText); await load(true); if(after) after(); else closeDrawer(); }
+  catch(e){ toast(errMsg(e)); document.querySelectorAll(".drawer footer .btn").forEach(b=>b.disabled=false); }
+}
+function modal(html){$("modalRoot").innerHTML=`<div class="modal"><div class="box">${html}</div></div>`;const m=$("modalRoot").querySelector(".modal");m.onclick=e=>{if(e.target===m)$("modalRoot").innerHTML="";};return m;}
+function confirmDel(type,id,text){
+  const m=modal(`<h3>Удалить насовсем?</h3><p>${esc(text)}</p><div class="acts"><button class="btn ghost" data-no>Отмена</button><button class="btn danger" data-yes><span class="ic">delete_forever</span>Удалить</button></div>`);
+  m.querySelector("[data-no]").onclick=()=>$("modalRoot").innerHTML="";
+  m.querySelector("[data-yes]").onclick=()=>{$("modalRoot").innerHTML="";doDelete(type,id);};
+}
+async function doDelete(type,id){
+  try{ const r=await api("adminDelete",{type,id}); toast(type==="deletion"?"Убрано из списка":"Удалено записей: "+r.deleted); closeDrawer(); await load(true); }
+  catch(e){ toast(errMsg(e)); }
+}
+function message(tgId,who){
+  if(!D.bot){toast("Бот не подключён: добавьте BOT_TOKEN в свойства скрипта");return;}
+  const m=modal(`<h3>Сообщение через бота</h3><p>Кому: ${esc(who)}</p><textarea class="input" id="msgText" placeholder="Текст сообщения" style="min-height:110px"></textarea>
+    <p class="upd" style="margin-top:8px">Придёт от бота с подписью «Сообщение от команды StudentJob».</p><div class="acts"><button class="btn ghost" data-no>Отмена</button><button class="btn gold" data-yes><span class="ic">send</span>Отправить</button></div>`);
+  setTimeout(()=>$("msgText").focus(),30);
+  m.querySelector("[data-no]").onclick=()=>$("modalRoot").innerHTML="";
+  m.querySelector("[data-yes]").onclick=async()=>{const t=$("msgText").value.trim();if(!t)return;
+    try{const r=await api("adminMessage",{tgId,text:t});$("modalRoot").innerHTML="";toast(r.delivered?"Сообщение доставлено":"Не доставлено: человек не разрешил боту писать ему");}catch(e){toast(errMsg(e));}};
+}
+
+boot();
+})();
+</script>
+</body>
+</html>

@@ -14,7 +14,7 @@
 /* ===================== НАСТРОЙКИ (меняйте только здесь) ===================== */
 const CONFIG = {
   // Ссылка на веб-приложение Google Apps Script (заканчивается на /exec)
-  API_URL: "https://script.google.com/macros/s/AKfycbyH0WeRxAPhAwujo_0NvGaG0xHh5gNV7ZopCjJOoYfECWbHwSDHbBUt4mq0-Y5jkSB0/exec",
+  API_URL: "https://script.google.com/macros/s/AKfycbxAVOPftIB0_gFSg8OM-t8dr9PVyEbWPZAF0_H2eAoZ9mFti-IZZb-N9SNqvCJwSzw/exec",
   // Ссылка на мини-аппку в Telegram (из @BotFather), для тех, кто открыл в браузере
   BOT_LINK: "https://t.me/StudyJobAlmaty_bot",
   // Telegram-аккаунт команды для вопросов (без @)
@@ -697,7 +697,7 @@ async function boot(){
       store.set("profile", profile);
     }
   }catch(e){ $("failText").textContent=errMsg(e); show("fail"); return; }
-  if(SOURCE==="admin" && me.isAdmin) show("admHome");
+  if(SOURCE==="admin" && me.isAdmin) { location.href="admin.html"; return; }
   else if(/^emp/i.test(SOURCE)) goEmployer();
   else if(profile) show("feed");
   else show("role");
@@ -1091,7 +1091,7 @@ document.addEventListener("click", async e=>{
   switch(d.act){
     case "student": track("role","student"); startStudent(); break;
     case "employer": track("role","employer"); goEmployer(); break;
-    case "admin": show("admHome"); break;
+    case "admin": location.href="admin.html"; break;
     case "toRole": show("role"); break;
     case "retryBoot": boot(); break;
     case "st1next": st1next(); break;
